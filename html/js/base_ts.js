@@ -1,12 +1,12 @@
-var SERVER = new Object();
+var SERVER = {};
 var BULK_EDIT = false;
 var COLUMN_TO_SORT;
-var SEARCH_MAPPING = new Object();
-var UNDO = new Object();
+var SEARCH_MAPPING = {};
+var UNDO = {};
 var SERVER_CONNECTION = false;
 var WS_AVAILABLE = false;
 // Menu
-var menuItems = new Array();
+var menuItems = [];
 menuItems.push(new MainMenuItem("playlist", "{{.mainMenu.item.playlist}}", "m3u.png", "{{.mainMenu.headline.playlist}}"));
 menuItems.push(new MainMenuItem("filter", "{{.mainMenu.item.filter}}", "filter.png", "{{.mainMenu.headline.filter}}"));
 menuItems.push(new MainMenuItem("xmltv", "{{.mainMenu.item.xmltv}}", "xmltv.png", "{{.mainMenu.headline.xmltv}}"));
@@ -16,7 +16,7 @@ menuItems.push(new MainMenuItem("settings", "{{.mainMenu.item.settings}}", "sett
 menuItems.push(new MainMenuItem("log", "{{.mainMenu.item.log}}", "log.png", "{{.mainMenu.headline.log}}"));
 menuItems.push(new MainMenuItem("logout", "{{.mainMenu.item.logout}}", "logout.png", "{{.mainMenu.headline.logout}}"));
 // Settings categories
-var settingsCategory = new Array();
+var settingsCategory = [];
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.general}}", "tlsMode,xteveAutoUpdate,hostIP,tuner,epgSource,disallowURLDuplicates,clearXMLTVCache,api"));
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.mapping}}", "defaultMissingEPG,enableMappedChannels"));
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.files}}", "update,files.update,temp.path,cache.images,xepg.replace.missing.images"));
@@ -24,7 +24,7 @@ settingsCategory.push(new SettingsCategoryItem("{{.settings.category.streaming}}
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.backup}}", "backup.path,backup.keep"));
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.authentication}}", "authentication.web,authentication.pms,authentication.m3u,authentication.xml,authentication.api"));
 function showPopUpElement(elm) {
-    var allElements = new Array("popup-custom");
+    var allElements = ["popup-custom"];
     for (var i = 0; i < allElements.length; i++) {
         showElement(allElements[i], false);
     }
@@ -96,7 +96,7 @@ function getOwnObjProps(object) {
     return object ? Object.getOwnPropertyNames(object) : [];
 }
 function getAllSelectedChannels() {
-    var channels = new Array();
+    var channels = [];
     if (BULK_EDIT == false) {
         return channels;
     }
@@ -205,7 +205,7 @@ function sortTable(column) {
     return;
 }
 function createSearchObj() {
-    SEARCH_MAPPING = new Object();
+    SEARCH_MAPPING = {};
     var data = SERVER["xepg"]["epgMapping"];
     var channels = getOwnObjProps(data);
     var channelKeys = ["x-active", "x-channelID", "x-name", "updateChannelNameRegex", "_file.m3u.name", "x-group-title", "x-xmltv-file"];
@@ -256,7 +256,7 @@ function searchInMapping() {
 function calculateWrapperHeight() {
     if (document.getElementById("box-wrapper")) {
         var elm = document.getElementById("box-wrapper");
-        var divs = new Array("myStreamsBox", "clientInfo", "content");
+        var divs = ["myStreamsBox", "clientInfo", "content"];
         var elementsHeight = 0 - elm.offsetHeight;
         for (var i = 0; i < divs.length; i++) {
             elementsHeight = elementsHeight + document.getElementById(divs[i]).offsetHeight;
@@ -279,8 +279,11 @@ function changeChannelNumber(element) {
         var channelNumber = parseFloat(data[id]["x-channelID"]);
         channelNumbers.push(channelNumber);
     });
-    for (var i = 0; i < channelNumbers.length; i++) {
+    var newChannel = newNumber;
+    var emptyChannel = newNumber;
+    for (let i = 0; i < channelNumbers.length; i++) {
         if (channelNumbers.indexOf(newNumber) == -1) {
+            emptyChannel = newNumber;
             break;
         }
         if (Math.floor(newNumber) == newNumber) {
@@ -292,8 +295,26 @@ function changeChannelNumber(element) {
             newNumber = Math.round(newNumber * 10) / 10;
         }
     }
-    data[dbID]["x-channelID"] = newNumber.toString();
-    element.value = newNumber;
+    if (emptyChannel == newChannel) {
+        data[dbID]["x-channelID"] = newNumber.toString();
+    }
+    else {
+        var prevName = "";
+        for (let i = newChannel; i <= emptyChannel; i++) {
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    if (data[key]['x-channelID'] == i && data[key]["x-name"] != prevName) {
+                        prevName = data[key]["x-name"];
+                        data[key]["x-channelID"] = (i + 1).toString();
+                        document.getElementById(key).querySelectorAll('input')[1].value = (i + 1).toString();
+                        break;
+                    }
+                }
+            }
+        }
+        data[dbID]["x-channelID"] = newChannel.toString();
+    }
+    element.value = newChannel;
     if (COLUMN_TO_SORT == 1) {
         COLUMN_TO_SORT = -1;
         sortTable(1);
@@ -301,7 +322,7 @@ function changeChannelNumber(element) {
     return;
 }
 function backup() {
-    var data = new Object();
+    var data = {};
     var cmd = "xteveBackup";
     var server = new Server(cmd);
     server.request(data);
@@ -378,7 +399,7 @@ function restore() {
             if (file) {
                 reader.readAsDataURL(file);
                 reader.onload = function () {
-                    var data = new Object();
+                    var data = {};
                     var cmd = "xteveRestore";
                     data["base64"] = reader.result;
                     var server = new Server(cmd);
@@ -415,7 +436,7 @@ function uploadLogo() {
         if (file) {
             reader.readAsDataURL(file);
             reader.onload = function () {
-                var data = new Object();
+                var data = {};
                 var cmd = "uploadLogo";
                 data["base64"] = reader.result;
                 data["filename"] = file.name;
