@@ -628,7 +628,9 @@ class ShowContent extends Content {
     let input = document.createElement("INPUT")
     input.setAttribute("type", type)
     input.setAttribute("name", name)
-    input.setAttribute("value", value)
+    if (value != '') {
+      input.setAttribute("value", value)
+    }
     return input
   }
 
@@ -692,6 +694,18 @@ class ShowContent extends Content {
         var input = this.createInput("button", menuKey, "{{.button.bulkEdit}}")
         input.setAttribute("onclick", 'javascript: bulkEdit()')
         interaction.appendChild(input)
+
+        var input = this.createInput("checkbox", menuKey, "")
+        input.setAttribute("id", "shiftChannel")
+        input.setAttribute("checked", "")
+        input.setAttribute("title", "{{.checkbox.shiftChannel.title}}")
+        interaction.appendChild(input)
+
+        let label = document.createElement("label")
+        label.setAttribute("for", "shiftChannel")
+        label.setAttribute("class", "shiftChannelLabel")
+        label.innerHTML = "{{.checkbox.shiftChannel.label}}"
+        interaction.appendChild(label)
 
         var input = this.createInput("search", "search", "")
         input.setAttribute("id", "searchMapping")
@@ -1648,7 +1662,7 @@ function openPopUp(dataType, element) {
 
       // Expand EPG category
       var dbKey:string = "x-category"
-      var text:string[] = ["-", "Kids (Emby only)", "News", "Movie", "Series", "Sports"]
+      var text:string[] = ["-", "Kids", "News", "Movie", "Series", "Sports"]
       var values:string[] = ["", "Kids", "News", "Movie", "Series", "Sports"]
       var select = content.createSelect(text, values, data[dbKey], dbKey)
       select.setAttribute("onchange", "javascript: this.className = 'changed'")  

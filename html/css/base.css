@@ -354,6 +354,11 @@ input[type=button].center{
   border-bottom: solid 0px #777;
 }
 
+.shiftChannelLabel {
+  display: inline;
+  margin-left: 5px;
+  margin-bottom: 20px;
+}
 
 .half {
   display: block;

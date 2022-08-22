@@ -416,25 +416,30 @@ function changeChannelNumber(element) {
 
   }
 
-  if (emptyChannel == newChannel) {
-    data[dbID]["x-channelID"] = newNumber.toString()
-  } else {
-    var prevName = ""
-    for (let i = newChannel; i <= emptyChannel; i++) {
-      for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-          if (data[key]['x-channelID'] == i && data[key]["x-name"] != prevName) {
-            prevName = data[key]["x-name"]
-            data[key]["x-channelID"] = (i + 1).toString()
-            document.getElementById(key).querySelectorAll('input')[1].value = (i + 1).toString()
-            break
+  if ((document.getElementById('shiftChannel') as HTMLInputElement).checked) {
+    if (emptyChannel == newChannel) {
+      data[dbID]["x-channelID"] = newNumber.toString()
+    } else {
+      var prevName = ""
+      for (let i = newChannel; i <= emptyChannel; i++) {
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            if (data[key]['x-channelID'] == i && data[key]["x-name"] != prevName) {
+              prevName = data[key]["x-name"]
+              data[key]["x-channelID"] = (i + 1).toString()
+              document.getElementById(key).querySelectorAll('input')[1].value = (i + 1).toString()
+              break
+            }
           }
         }
       }
+      data[dbID]["x-channelID"] = newChannel.toString()
     }
-    data[dbID]["x-channelID"] = newChannel.toString()
+    element.value = newChannel
+  } else {
+    data[dbID]["x-channelID"] = newNumber.toString();
+    element.value = newNumber;
   }
-  element.value = newChannel
 
   if (COLUMN_TO_SORT == 1) {
     COLUMN_TO_SORT = -1

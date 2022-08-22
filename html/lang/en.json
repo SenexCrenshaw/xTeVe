@@ -54,6 +54,13 @@
     "resetLogs": "Reset Logs",
     "uploadLogo": "Upload Logo"
   },
+  "checkbox":
+  {
+	"shiftChannel": {
+		"label": "Shift channels",
+		"title": "Shift existing channels up by 1 channel number if moving a channel to an already used channel number"
+	}
+  },
   "filter":
   {
     "table":

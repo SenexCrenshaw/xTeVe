@@ -496,7 +496,9 @@ class ShowContent extends Content {
         let input = document.createElement("INPUT");
         input.setAttribute("type", type);
         input.setAttribute("name", name);
-        input.setAttribute("value", value);
+        if (value != '') {
+            input.setAttribute("value", value);
+        }
         return input;
     }
     show() {
@@ -549,6 +551,16 @@ class ShowContent extends Content {
                 var input = this.createInput("button", menuKey, "{{.button.bulkEdit}}");
                 input.setAttribute("onclick", 'javascript: bulkEdit()');
                 interaction.appendChild(input);
+                var input = this.createInput("checkbox", menuKey, "");
+                input.setAttribute("id", "shiftChannel");
+                input.setAttribute("checked", "");
+                input.setAttribute("title", "{{.checkbox.shiftChannel.title}}");
+                interaction.appendChild(input);
+                let label = document.createElement("label");
+                label.setAttribute("for", "shiftChannel");
+                label.setAttribute("class", "shiftChannelLabel");
+                label.innerHTML = "{{.checkbox.shiftChannel.label}}";
+                interaction.appendChild(label);
                 var input = this.createInput("search", "search", "");
                 input.setAttribute("id", "searchMapping");
                 input.setAttribute("placeholder", "{{.button.search}}");
@@ -1326,7 +1338,7 @@ function openPopUp(dataType, element) {
             content.appendRow("{{.mapping.updateChannelLogo.title}}", input);
             // Expand EPG category
             var dbKey = "x-category";
-            var text = ["-", "Kids (Emby only)", "News", "Movie", "Series", "Sports"];
+            var text = ["-", "Kids", "News", "Movie", "Series", "Sports"];
             var values = ["", "Kids", "News", "Movie", "Series", "Sports"];
             var select = content.createSelect(text, values, data[dbKey], dbKey);
             select.setAttribute("onchange", "javascript: this.className = 'changed'");

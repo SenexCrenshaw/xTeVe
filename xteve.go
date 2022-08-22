@@ -26,7 +26,7 @@ type GitHubStruct struct {
 
 // GitHub : GitHub Account
 // If you want to fork this project, enter your Github account here. This prevents a newer version of xTeVe from updating your version.
-var GitHub = GitHubStruct{Branch: "master", User: "SCP002", Repo: "xTeVe", Update: false}
+var GitHub = GitHubStruct{Branch: "master", User: "cnorton-webdev", Repo: "xTeVe", Update: false}
 
 // Branch:	GitHub Branch
 // User: 	GitHub Username
@@ -37,7 +37,7 @@ var GitHub = GitHubStruct{Branch: "master", User: "SCP002", Repo: "xTeVe", Updat
 const Name = "xTeVe"
 
 // Version : Version, the Build Number is parsed in the main func
-const Version = "2.5.0.0000"
+const Version = "2.5.1.0000"
 
 // DBVersion : Database Version
 const DBVersion = "2.3.0"
