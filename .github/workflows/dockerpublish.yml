@@ -1,15 +1,19 @@
 name: Publish to Docker Registry
 on:
-  release:
-      types: [published]
+  # release:
+  #     types: [published]
   #push:
     #branches:
     #  - main    
   #schedule:
    # - cron: '0 2 * * 0' # Weekly on Sundays at 02:00
+  workflow_run:
+    workflows: ["SLSA Go releaser"]
+    types:
+      - completed
   workflow_dispatch:
 jobs:
-  update:
+  build_and_publish:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
