@@ -17,10 +17,7 @@ jobs:
   build_and_publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set output
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - uses: actions/checkout@v3      
       - name: Publish to Docker Registry      
         uses: elgohr/Publish-Docker-Github-Action@v4
         with:
@@ -28,5 +25,5 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           cache: ${{ github.event_name != 'schedule' }}
-          tags: "latest,${{ steps.vars.outputs.tag }}"
+          tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
           default_branch: main
