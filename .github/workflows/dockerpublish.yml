@@ -24,4 +24,5 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         cache: ${{ github.event_name != 'schedule' }}
-        tag_semver: true
+        tag_names: true
+        default_branch: main
