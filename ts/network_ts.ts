@@ -14,7 +14,7 @@ class Server {
 
     SERVER_CONNECTION = true
 
-    if (this.cmd != "updateLog") {
+    if (this.cmd != "updateLog" && this.cmd != "updateLogos") {
       showElement("loading", true)
       UNDO = new Object()
     }
@@ -93,7 +93,9 @@ class Server {
             showLogs(false)
           }
           return
-        
+        case "updateLogos":
+          SERVER["tvlogos"] = response["tvlogos"]
+          return
         default:
           SERVER = new Object()
           SERVER = response

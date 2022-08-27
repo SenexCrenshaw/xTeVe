@@ -11,10 +11,10 @@ for file in ../html/* ../html/**/*
 do
     if [[ -f $file ]]; then
         filePath=$file
-	fileName="${file/..\/}"
-	base=$( base64 -w 0 "$filePath" )
-	output="  webUI[\"$fileName\"] = \"$base\""
-	echo -e "$output" >> '../src/webUI.go'
+        fileName="${file/..\/}"
+        base=$( base64 -w 0 "$filePath" )
+        output="\twebUI[\"$fileName\"] = \"$base\""
+        echo -e "$output" >> '../src/webUI.go'
     fi
 done
 

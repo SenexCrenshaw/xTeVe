@@ -772,7 +772,17 @@ function saveSettings() {
           case "checkbox":
             name = (settings[i] as HTMLInputElement).name
             value = (settings[i] as HTMLInputElement).checked
-            newSettings[name] = value
+            switch(name) {
+                case "enableTapiosinnTVLogos":
+                  if (value) {
+                    LOGO_UPDATE_INTERVAL = setInterval(checkLogos, 5000)
+                  }
+                  newSettings[name] = value
+                  break
+                default:
+                  newSettings[name] = value
+                  break
+            }
             break
 
           case "text":

@@ -1135,7 +1135,8 @@ function openPopUp(dataType, element) {
   }
 
   let content:PopupContent = new PopupContent()
-  
+  let currentLogoUrl:string
+
   switch (dataType) {
     case "playlist": 
       content.createHeadline("{{.playlist.playlistType.title}}")
@@ -1657,7 +1658,7 @@ function openPopUp(dataType, element) {
       if (SERVER['settings']['enableTapiosinnTVLogos']) {
         var dbKey:string = "tvg-logo"
         var logos = new TVLogosFile()
-        const currentLogoUrl: string = data[dbKey]
+        currentLogoUrl = data[dbKey]
         const [logoContainer, logoInput, logoDatalist] = logos.newTvLogosIdPicker(currentLogoUrl)
         logoContainer.setAttribute('id', 'station-logo-picker-container')
         logoInput.setAttribute('list', 'station-logo-picker-datalist')
@@ -1668,6 +1669,7 @@ function openPopUp(dataType, element) {
         content.appendRow('{{.mapping.channelLogo.title}}', logoContainer);
       } else {
         var dbKey:string = "tvg-logo"
+        currentLogoUrl = data[dbKey]
         var input = content.createInput("text", dbKey, data[dbKey])
         input.setAttribute("onchange", "javascript: this.className = 'changed'; previewChannelLogo(this.value)")
         input.setAttribute("id", "channel-icon")
@@ -1778,6 +1780,7 @@ function openPopUp(dataType, element) {
       break;
   }
   
+  previewChannelLogo(currentLogoUrl)
   showPopUpElement('popup-custom');
 }
 

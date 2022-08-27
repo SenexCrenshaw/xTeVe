@@ -493,6 +493,9 @@ func WS(w http.ResponseWriter, r *http.Request) {
 							buildLogos()
 							response.Tvlogos = Data.TVLogos.Files
 						}()
+					} else {
+						Data.TVLogos.Files = make(map[string]interface{})
+						response.Tvlogos = Data.TVLogos.Files
 					}
 				}
 
@@ -655,6 +658,12 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		// case "wizardCompleted":
 		// 	System.ConfigurationWizard = false
 		// 	response.Reload = true
+		case "updateLogos":
+			if len(Data.TVLogos.Files) > 0 {
+				response.Tvlogos = Data.TVLogos.Files
+			} else {
+				response.Tvlogos = make(map[string]interface{})
+			}
 
 		default:
 			fmt.Println("+ + + + + + + + + + +", request.Cmd)

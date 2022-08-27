@@ -5,7 +5,7 @@ var SEARCH_MAPPING = {}
 var UNDO = {}
 var SERVER_CONNECTION = false
 var WS_AVAILABLE = false
-
+var LOGO_UPDATE_INTERVAL: number
 
 // Menu
 var menuItems = []
@@ -660,3 +660,12 @@ function updateLog() {
   server.request(new Object())
 
 }
+
+function checkLogos() {
+  if (SERVER['tvlogos'].hasOwnProperty('files')) {
+    clearInterval(LOGO_UPDATE_INTERVAL)
+  } else {
+    var server: Server = new Server("updateLogos")
+    server.request(new Object())
+  }
+ }
