@@ -72,7 +72,7 @@ func buildXEPG(background bool) {
 				createXMLTVFile()
 				createM3UFile()
 
-				showInfo("XEPG:Ready to use")
+				showInfo("XEPG:" + "Ready to use")
 
 				if Settings.CacheImages && System.ImageCachingInProgress == 0 {
 
@@ -134,7 +134,7 @@ func buildXEPG(background bool) {
 
 				}
 
-				showInfo("XEPG:Ready to use")
+				showInfo("XEPG:" + "Ready to use")
 
 				System.ScanInProgress = 0
 
@@ -233,6 +233,7 @@ func createXEPGMapping() {
 	}
 
 	Data.XMLTV.Mapping["xTeVe Dummy"] = dummy
+
 }
 
 // Create / update XEPG Database
@@ -643,7 +644,7 @@ func mapping() (err error) {
 
 					var fileID = strings.TrimSuffix(getFilenameFromPath(file), path.Ext(getFilenameFromPath(file)))
 
-					ShowError(fmt.Errorf("Missing XMLTV file: %s", getProviderParameter(fileID, "xmltv", "name")), 0)
+					ShowError(fmt.Errorf("missing XMLTV file: %s", getProviderParameter(fileID, "xmltv", "name")), 0)
 					showWarning(2301)
 					xepgChannel.XActive = false
 
@@ -738,6 +739,9 @@ func createXMLTVFile() (err error) {
 				*tmpProgram, err = getProgramData(xepgChannel)
 				if err == nil {
 
+					// for _, program := range tmpProgram.Program {
+					// 	xepgXML.Program = append(xepgXML.Program, program)
+					// }
 					xepgXML.Program = append(xepgXML.Program, tmpProgram.Program...)
 
 				}
@@ -1028,7 +1032,7 @@ func getLocalXMLTV(file string, xmltv *XMLTV) (err error) {
 		// Local XML File does not exist in the folder: Data
 		if err != nil {
 			ShowError(err, 1004)
-			err = errors.New("Local copy of the file no longer exists")
+			err = errors.New("local copy of the file no longer exists")
 			return err
 		}
 
@@ -1073,7 +1077,7 @@ func cleanupXEPG() {
 		sourceIDs = append(sourceIDs, source)
 	}
 
-	showInfo("XEPG:" + fmt.Sprintf("Cleanup database"))
+	showInfo("XEPG:" + "Cleanup database")
 	Data.XEPG.XEPGCount = 0
 
 	for id, dxc := range Data.XEPG.Channels {

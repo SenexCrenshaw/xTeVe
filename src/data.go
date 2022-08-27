@@ -55,6 +55,10 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 
 				}
 
+				// if len(newUpdateTimes) == 0 {
+				// 	//newUpdateTimes = append(newUpdateTimes, "0000")
+				// }
+
 				value = newUpdateTimes
 
 			case "cache.images":
@@ -551,7 +555,7 @@ func saveXEpgMapping(request RequestStruct) (err error) {
 			cleanupXEPG()
 			System.ScanInProgress = 0
 			buildXEPG(false)
-			showInfo("XEPG:Ready to use")
+			showInfo("XEPG:" + "Ready to use")
 
 			System.BackgroundProcess = false
 
@@ -873,12 +877,12 @@ func buildDatabaseDVR() (err error) {
 						if value, ok := s[key]; ok {
 							if len(value) > 0 {
 
-								if _, ok := tmpGroupsM3U[value]; ok {
-									tmpGroupsM3U[value]++
-								} else {
-									tmpGroupsM3U[value] = 1
-								}
-
+								// if _, ok := tmpGroupsM3U[value]; ok {
+								// 	tmpGroupsM3U[value]++
+								// } else {
+								// 	tmpGroupsM3U[value] = 1
+								// }
+								tmpGroupsM3U[value]++
 								groupTitle++
 							}
 						}

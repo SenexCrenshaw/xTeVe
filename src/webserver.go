@@ -115,6 +115,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	showDebug(debug, 2)
 
 	switch path {
+	case "/favicon.ico":
+		if value, ok := webUI["html"+path].(string); ok {
+			response = []byte(GetHTMLString(value))
+			w.Header().Set("Content-Type", "image/x-icon")
+		}
 
 	case "/discover.json":
 		response, err = getDiscover()
@@ -125,7 +130,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 	case "/lineup.json":
-		if Settings.AuthenticationPMS == true {
+		if Settings.AuthenticationPMS {
 
 			_, err := basicAuth(r, "authentication.pms")
 			if err != nil {
@@ -190,7 +195,7 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 			ShowError(err, 2004)
 
 			showInfo("Streaming URL:" + streamInfo.URL)
-			http.Redirect(w, r, streamInfo.URL, http.StatusMovedPermanently)
+			http.Redirect(w, r, streamInfo.URL, http.StatusFound)
 
 			showInfo("Streaming Info:URL was passed to the client")
 			return
@@ -215,7 +220,7 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 
 	case "-":
 		showInfo("Streaming URL:" + streamInfo.URL)
-		http.Redirect(w, r, streamInfo.URL, http.StatusMovedPermanently)
+		http.Redirect(w, r, streamInfo.URL, http.StatusFound)
 
 		showInfo("Streaming Info:URL was passed to the client.")
 		showInfo("Streaming Info:xTeVe is no longer involved, the client connects directly to the streaming server.")
@@ -372,7 +377,10 @@ func WS(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	conn, err := websocket.Upgrade(w, r, w.Header(), 1024, 1024)
+	u := websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
+
+	conn, err := u.Upgrade(w, r, w.Header())
+
 	if err != nil {
 		ShowError(err, 0)
 		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
@@ -456,6 +464,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			var previousTLSMode = Settings.TLSMode
 			var previousTvLogos = Settings.EnableTapiosinnTVLogos
 			var previousHostIP = Settings.HostIP
+			var previousHostName = Settings.HostName
 			var previousStoreBufferInRAM = Settings.StoreBufferInRAM
 			var previousClearXMLTVCache = Settings.ClearXMLTVCache
 
@@ -489,6 +498,16 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 				if Settings.HostIP != previousHostIP {
 					showInfo("Web server:" + fmt.Sprintf("Changing host IP to %s", Settings.HostIP))
+
+					reinitialize()
+
+					response.OpenLink = System.URLBase + "/web/"
+					restartWebserver <- true
+				}
+
+				if Settings.HostName != previousHostName {
+					Settings.HostIP = previousHostName
+					showInfo("Web server:" + fmt.Sprintf("Changing host name to %s", Settings.HostName))
 
 					reinitialize()
 
@@ -813,9 +832,9 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 		requestFile = file
 
-		if value, ok := webUI[requestFile]; ok {
+		if _, ok := webUI[requestFile]; ok {
 
-			content = GetHTMLString(value.(string))
+			//content = GetHTMLString(value.(string))
 
 			if contentType == "text/plain" {
 				w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
@@ -830,7 +849,6 @@ func Web(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if value, ok := webUI[requestFile].(string); ok {
-
 		content = GetHTMLString(value)
 		contentType = getContentType(requestFile)
 
@@ -964,7 +982,7 @@ func API(w http.ResponseWriter, r *http.Request) {
 				}
 
 			} else {
-				err = errors.New("Login incorrect")
+				err = errors.New("login incorrect")
 				if err != nil {
 					responseAPIError(err)
 					return
@@ -1153,6 +1171,7 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 func httpStatusError(w http.ResponseWriter, r *http.Request, httpStatusCode int) {
 	http.Error(w, fmt.Sprintf("%s [%d]", http.StatusText(httpStatusCode), httpStatusCode), httpStatusCode)
+
 }
 
 func getContentType(filename string) (contentType string) {

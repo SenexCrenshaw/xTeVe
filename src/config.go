@@ -201,12 +201,16 @@ func Init() (err error) {
 	showInfo(fmt.Sprintf("GitHub:https://github.com/%s", System.GitHub.User))
 	showInfo(fmt.Sprintf("Git Branch:%s [%s]", System.Branch, System.GitHub.User))
 
+	if len(strings.TrimSpace(Settings.HostName)) > 0 {
+		Settings.HostIP = strings.TrimSpace(Settings.HostName)
+	}
+
 	// Set Domain Names
 	setGlobalDomain(fmt.Sprintf("%s:%s", Settings.HostIP, Settings.Port))
 
 	System.URLBase = fmt.Sprintf("%s://%s:%s", System.ServerProtocol.WEB, Settings.HostIP, Settings.Port)
 
-	// Create HTML Files, with dev == true the local HTML Files are used
+	// Create HTML Files, with dev the local HTML Files are used
 	if System.Dev {
 
 		HTMLInit("webUI", "src", "html"+string(os.PathSeparator), "src"+string(os.PathSeparator)+"webUI.go")

@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -12,24 +12,37 @@
 </head>
 
 <body>
+
   <div id="header" class="imgCenter"></div>
+
   <div id="box">
+
     <div id="headline">
       <h1 id="head-text" class="center">{{.login.headline}}</h1>
     </div>
+
     <p id="err" class="errorMsg center">{{.authenticationErr}}</p>
+
     <div id="content">
+
       <form id="authentication" action="" method="post">
+
         <h5>{{.login.username.title}}:</h5>
         <input id="username" type="text" name="username" placeholder="Username" value="">
+
         <h5>{{.login.password.title}}:</h5>
         <input id="password" type="password" name="password" placeholder="Password" value="">
+
         <div style="text-align: center">
           <input id="submitBtn" type="submit" value="Login" onclick="login();">
         </div>
+
       </form>
+
     </div>
+
   </div>
+
 </body>
 
 </html>
