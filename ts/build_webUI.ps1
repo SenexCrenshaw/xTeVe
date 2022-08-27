@@ -21,7 +21,7 @@ Foreach-Object {
 		$file = $_.FullName.Replace("\","/").Substring($htmlIndex)
 		$fileContentBytes = Get-Content $fullPath -Encoding byte -Raw
 		$fileContentEncoded = [System.Convert]::ToBase64String($fileContentBytes)
-		$output = "`t" + 'webUI["' + $file + '"] = "' + $fileContentEncoded + '"'
+		$output = "  " + 'webUI["' + $file + '"] = "' + $fileContentEncoded + '"'
 		Add-Content '../src/webUI.go' $output
 	}
 }

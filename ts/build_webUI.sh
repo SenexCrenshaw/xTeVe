@@ -13,7 +13,7 @@ do
         filePath=$file
 	fileName="${file/..\/}"
 	base=$( base64 -w 0 "$filePath" )
-	output="\twebUI[\"$fileName\"] = \"$base\""
+	output="  webUI[\"$fileName\"] = \"$base\""
 	echo -e "$output" >> '../src/webUI.go'
     fi
 done
