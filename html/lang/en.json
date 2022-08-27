@@ -281,6 +281,12 @@
       "placeholder": "",
       "description": ""
     },
+    "channelLogoPreview":
+    {
+      "title": "Channel Logo Preview",
+      "placeholder": "",
+      "description": ""
+    },
     "updateChannelLogo":
     {
       "title": "Update Channel Logo",
@@ -437,8 +443,12 @@
     },
     "tlsMode": {
       "title": "TLS (HTTPS) mode",
-      "description": "Changes web server protocol to HTTPS.<br>For details, see <a>https://github.com/SCP002/xTeVe#tls-mode</a>"
+      "description": "Changes web server protocol to HTTPS.<br>For details, see <a href='https://github.com/SCP002/xTeVe#tls-mode' target='_blank'>https://github.com/SCP002/xTeVe#tls-mode</a>"
     },
+	"tvLogos": {
+		"title": "Enable ability to find station logos",
+		"description": "Adds the ability to find station logos from Tapiosinn's tv-logos Github repository, see <a href='https://github.com/Tapiosinn/tv-logos/' target='_blank'>https://github.com/Tapiosinn/tv-logos/</a>"		
+	},
     "filesUpdate":
     {
       "title": "Updates all files at startup",

@@ -128,6 +128,17 @@ class SettingsCategory {
                 setting.appendChild(tdLeft);
                 setting.appendChild(tdRight);
                 break;
+            case "enableTapiosinnTVLogos":
+                var tdLeft = document.createElement("TD");
+                tdLeft.innerHTML = "{{.settings.tvLogos.title}}" + ":";
+                var tdRight = document.createElement("TD");
+                var input = content.createCheckbox(settingsKey);
+                input.checked = data;
+                input.setAttribute("onchange", "javascript: this.className = 'changed'");
+                tdRight.appendChild(input);
+                setting.appendChild(tdLeft);
+                setting.appendChild(tdRight);
+                break;
             case "disallowURLDuplicates":
                 var tdLeft = document.createElement("TD");
                 tdLeft.innerHTML = "{{.settings.disallowURLDuplicates.title}}" + ":";
@@ -396,6 +407,9 @@ class SettingsCategory {
         switch (settingsKey) {
             case "tlsMode":
                 text = "{{.settings.tlsMode.description}}";
+                break;
+            case "enableTapiosinnTVLogos":
+                text = "{{.settings.tvLogos.description}}";
                 break;
             case "disallowURLDuplicates":
                 text = "{{.settings.disallowURLDuplicates.description}}";

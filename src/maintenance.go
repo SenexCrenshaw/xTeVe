@@ -52,7 +52,7 @@ func maintenance() {
 						ShowError(err, 000)
 					}
 
-					if Settings.CacheImages == false && System.ImageCachingInProgress == 0 {
+					if !Settings.CacheImages && System.ImageCachingInProgress == 0 {
 						removeChildItems(System.Folder.ImagesCache)
 					}
 
@@ -60,6 +60,8 @@ func maintenance() {
 					Data.Cache.XMLTV = make(map[string]XMLTV)
 					buildXEPG(false)
 
+					// Check if TV logos JSON needs updating
+					buildLogos()
 				}
 
 			}
@@ -75,7 +77,6 @@ func maintenance() {
 
 	}
 
-	return
 }
 
 func randomTime(min, max int) int {

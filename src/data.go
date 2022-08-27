@@ -55,10 +55,6 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 
 				}
 
-				if len(newUpdateTimes) == 0 {
-					//newUpdateTimes = append(newUpdateTimes, "0000")
-				}
-
 				value = newUpdateTimes
 
 			case "cache.images":
@@ -146,7 +142,7 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 		return
 	}
 
-	if Settings.AuthenticationWEB == false {
+	if !Settings.AuthenticationWEB {
 
 		Settings.AuthenticationAPI = false
 		Settings.AuthenticationM3U = false
@@ -188,7 +184,7 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 
 		settings = Settings
 
-		if reloadData == true {
+		if reloadData {
 
 			err = buildDatabaseDVR()
 			if err != nil {
@@ -199,7 +195,7 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 
 		}
 
-		if cacheImages == true {
+		if cacheImages {
 
 			if Settings.EpgSource == "XEPG" && System.ImageCachingInProgress == 0 {
 
@@ -238,7 +234,7 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 
 		}
 
-		if createXEPGFiles == true {
+		if createXEPGFiles {
 
 			go func() {
 				createXMLTVFile()
@@ -341,7 +337,7 @@ func saveFiles(request RequestStruct, fileType string) (err error) {
 			return
 		}
 
-		if reloadData == true {
+		if reloadData {
 
 			err = buildDatabaseDVR()
 			if err != nil {
@@ -415,7 +411,6 @@ func deleteLocalProviderFiles(dataID, fileType string) {
 		os.RemoveAll(System.Folder.Data + dataID + fileExtension)
 	}
 
-	return
 }
 
 // Save Filter Settings (WebUI)
@@ -470,7 +465,7 @@ func saveFilter(request RequestStruct) (settings SettingsStruct, err error) {
 				if len(filter) == 0 {
 
 					err = errors.New(getErrMsg(1014))
-					if newFilter == true {
+					if newFilter {
 						delete(filterMap, dataID)
 					}
 
@@ -538,7 +533,7 @@ func saveXEpgMapping(request RequestStruct) (err error) {
 		// If the Mapping is saved again while the Database is being created, the Database will not be updated again until later.
 		go func() {
 
-			if System.BackgroundProcess == true {
+			if System.BackgroundProcess {
 				return
 			}
 
@@ -556,7 +551,7 @@ func saveXEpgMapping(request RequestStruct) (err error) {
 			cleanupXEPG()
 			System.ScanInProgress = 0
 			buildXEPG(false)
-			showInfo("XEPG:" + fmt.Sprintf("Ready to use"))
+			showInfo("XEPG:Ready to use")
 
 			System.BackgroundProcess = false
 
@@ -597,7 +592,7 @@ func saveUserData(request RequestStruct) (err error) {
 			return
 		}
 
-		if request.DeleteUser == true {
+		if request.DeleteUser {
 			err = authentication.RemoveUser(userID)
 			return
 		}
@@ -958,7 +953,7 @@ func buildDatabaseDVR() (err error) {
 
 	for group, count := range tmpGroupsM3U {
 		var text = fmt.Sprintf("%s (%d)", group, count)
-		var value = fmt.Sprintf("%s", group)
+		var value = group
 		Data.Playlist.M3U.Groups.Text = append(Data.Playlist.M3U.Groups.Text, text)
 		Data.Playlist.M3U.Groups.Value = append(Data.Playlist.M3U.Groups.Value, value)
 	}

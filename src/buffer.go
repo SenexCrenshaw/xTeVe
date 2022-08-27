@@ -1675,7 +1675,7 @@ func initBufferVFS(virtual bool) {
 	} else {
 		bufferVFS = osfs.New()
 	}
-	
+
 }
 
 func debugRequest(req *http.Request) {

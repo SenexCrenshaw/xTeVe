@@ -1646,12 +1646,33 @@ function openPopUp(dataType, element) {
       content.description("{{.mapping.updateChannelNameByGroupRegex.description}}")
 
       // Logo URL (Channel) 
-      var dbKey:string = "tvg-logo"
-      var input = content.createInput("text", dbKey, data[dbKey])
-      input.setAttribute("onchange", "javascript: this.className = 'changed'")
-      input.setAttribute("id", "channel-icon")
-      content.appendRow("{{.mapping.channelLogo.title}}", input)
-      
+      if (SERVER['settings']['enableTapiosinnTVLogos']) {
+        var dbKey:string = "tvg-logo"
+        var logos = new TVLogosFile()
+        const currentLogoUrl: string = data[dbKey]
+        const [logoContainer, logoInput, logoDatalist] = logos.newTvLogosIdPicker(currentLogoUrl)
+        logoContainer.setAttribute('id', 'station-logo-picker-container')
+        logoInput.setAttribute('list', 'station-logo-picker-datalist')
+        logoInput.setAttribute('name', 'tvg-logo')
+        logoInput.setAttribute('id', 'station-logo-picker-input')
+        logoInput.setAttribute('onchange', `javascript: this.className = 'changed'; previewChannelLogo(this.value)`)
+        logoDatalist.setAttribute('id', 'station-logo-picker-datalist')
+        content.appendRow('{{.mapping.channelLogo.title}}', logoContainer);
+      } else {
+        var dbKey:string = "tvg-logo"
+        var input = content.createInput("text", dbKey, data[dbKey])
+        input.setAttribute("onchange", "javascript: this.className = 'changed'; previewChannelLogo(this.value)")
+        input.setAttribute("id", "channel-icon")
+        content.appendRow("{{.mapping.channelLogo.title}}", input)
+      }
+
+      // Logo URL preview
+      var dbKey:string = "tvg-logo-preview"
+      var div = document.createElement("DIV")
+      div.setAttribute('style', 'display:block; max-height:98px; max-width:100px;')
+      div.setAttribute('id', 'station-logo-preview')
+      content.appendRow('{{.mapping.channelLogoPreview.title}}', div);
+
       // Channel logo update
       var dbKey:string = "x-update-channel-icon"
       var input = content.createCheckbox(dbKey)
@@ -1750,6 +1771,65 @@ function openPopUp(dataType, element) {
   }
   
   showPopUpElement('popup-custom');
+}
+
+
+
+class TVLogosFile {
+  File:string
+
+  /**
+   * @param currentLogoUrl Current channel logo to set initial value to.
+   * @returns Array of, sequentially:
+   * 1) Container of the picker.
+   * 2) Input field to type at and get choice from.
+   * 3) Datalist containing every option.
+   */
+  newTvLogosIdPicker(currentLogoUrl: string): [HTMLDivElement, HTMLInputElement, HTMLDataListElement] {
+    const container = document.createElement('div')
+    const input = document.createElement('input')
+    input.setAttribute('type', 'text')
+
+    // Initially, set value to blank if input is empty
+    input.value = (currentLogoUrl) ? currentLogoUrl : ''
+
+    // When input lose focus or take a value, if it's empty, set value to blank
+    input.addEventListener('blur', setFallbackValue);
+    input.addEventListener('change', setFallbackValue);
+    function setFallbackValue(evt: Event) {
+      const target = evt.target as HTMLInputElement;
+      target.value = (target.value) ? target.value : (SERVER['settings']['tlsMode']) ? 'https://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png' : 'http://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png'
+    }
+
+    container.appendChild(input);
+
+    const datalist = document.createElement('datalist')
+
+    const option = document.createElement('option')
+    option.setAttribute('value', (SERVER['settings']['tlsMode']) ? 'https://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png' : 'http://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png');
+    option.innerText = 'Default non-custom logo';
+    datalist.appendChild(option);
+
+    const logos: Object = SERVER['tvlogos']['files']
+
+    if (logos) {
+      const folders = getOwnObjProps(logos);
+        folders.forEach((folder) => {
+          logos[folder].forEach((logo: string) => {
+            const option = document.createElement('option')
+            option.setAttribute('value', 'https://raw.githubusercontent.com/Tapiosinn/tv-logos/master' + folder.replace('/Tapiosinn/tv-logos/tree/master', '') + '/' + logo)
+            option.innerText = logo
+            datalist.appendChild(option)
+          });
+      });
+    }
+
+    container.appendChild(datalist)
+
+    return [container, input, datalist]
+  }
+
+  return: any
 }
 
 class XMLTVFile {
@@ -1854,7 +1934,7 @@ class XMLTVFile {
     return [container, input, datalist];
   }
 
-  return
+  return: any
 }
 
 function getValueFromProviderFile(file:string, fileType, key) {
@@ -1972,6 +2052,20 @@ function changeChannelLogo(epgMapId: string) {
     }
 
   }
+
+}
+
+function previewChannelLogo(url: string) {
+
+  let div = document.getElementById("station-logo-preview")
+  div.innerHTML = ''
+
+  let img = document.createElement("IMG")
+  img.setAttribute('src', url)
+  img.setAttribute('style', "max-height:98px; max-width:100px;")
+  img.setAttribute('onerror' , "javascript: this.onerror=null;this.src=''")
+
+  div.appendChild(img)
 
 }
 

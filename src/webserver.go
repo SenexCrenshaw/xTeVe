@@ -64,7 +64,7 @@ func StartWebserver() (err error) {
 			var err error
 
 			if Settings.TLSMode {
-				if allFilesExist(System.File.ServerCertPrivKey, System.File.ServerCert) == false {
+				if !allFilesExist(System.File.ServerCertPrivKey, System.File.ServerCert) {
 					if err = genCertFiles(); err != nil {
 						ShowError(err, 7000)
 					}
@@ -158,7 +158,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	httpStatusError(w, r, 500)
 
-	return
 }
 
 // Stream : Web Server /stream/
@@ -186,12 +185,12 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 		showInfo(fmt.Sprintf("Buffer:false [%s]", Settings.Buffer))
 
 	case "xteve":
-		if strings.Index(streamInfo.URL, "rtsp://") != -1 || strings.Index(streamInfo.URL, "rtp://") != -1 {
+		if strings.Contains(streamInfo.URL, "rtsp://") || strings.Contains(streamInfo.URL, "rtp://") {
 			err = errors.New("RTSP and RTP streams are not supported")
 			ShowError(err, 2004)
 
 			showInfo("Streaming URL:" + streamInfo.URL)
-			http.Redirect(w, r, streamInfo.URL, 302)
+			http.Redirect(w, r, streamInfo.URL, http.StatusMovedPermanently)
 
 			showInfo("Streaming Info:URL was passed to the client")
 			return
@@ -216,7 +215,7 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 
 	case "-":
 		showInfo("Streaming URL:" + streamInfo.URL)
-		http.Redirect(w, r, streamInfo.URL, 302)
+		http.Redirect(w, r, streamInfo.URL, http.StatusMovedPermanently)
 
 		showInfo("Streaming Info:URL was passed to the client.")
 		showInfo("Streaming Info:xTeVe is no longer involved, the client connects directly to the streaming server.")
@@ -226,7 +225,6 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	return
 }
 
 // Auto : HDHR routing (is currently not used)
@@ -251,7 +249,6 @@ func Auto(w http.ResponseWriter, r *http.Request) {
 		}
 	*/
 
-	return
 }
 
 // xTeVe : Web Server /xmltv/ and /m3u/
@@ -285,7 +282,7 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 		requestType = "m3u"
 		groupTitle = r.URL.Query().Get("group-title")
 
-		if System.Dev == false {
+		if !System.Dev {
 			// false: File name is set in the header
 			// true: M3U is displayed directly in the browser
 			w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(path))
@@ -321,7 +318,6 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(content))
 	}
 
-	return
 }
 
 // Images : Image Cache /images/
@@ -341,7 +337,6 @@ func Images(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write(content)
 
-	return
 }
 
 // DataImages : Image path for Logos / Images that have been uploaded / data_images /
@@ -361,7 +356,6 @@ func DataImages(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write(content)
 
-	return
 }
 
 // WS : Web Sockets /ws/
@@ -403,7 +397,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if System.ConfigurationWizard == false {
+		if !System.ConfigurationWizard {
 
 			switch Settings.AuthenticationWEB {
 
@@ -460,6 +454,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		case "saveSettings":
 			var authenticationUpdate = Settings.AuthenticationWEB
 			var previousTLSMode = Settings.TLSMode
+			var previousTvLogos = Settings.EnableTapiosinnTVLogos
 			var previousHostIP = Settings.HostIP
 			var previousStoreBufferInRAM = Settings.StoreBufferInRAM
 			var previousClearXMLTVCache = Settings.ClearXMLTVCache
@@ -469,7 +464,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 				response.OpenMenu = strconv.Itoa(lo.IndexOf(System.WEB.Menu, "settings"))
 
-				if Settings.AuthenticationWEB == true && authenticationUpdate == false {
+				if Settings.AuthenticationWEB && !authenticationUpdate {
 					response.Reload = true
 				}
 
@@ -480,6 +475,16 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 					response.OpenLink = System.URLBase + "/web/"
 					restartWebserver <- true
+				}
+
+				if Settings.EnableTapiosinnTVLogos != previousTvLogos {
+					showInfo("Web server:Toggling use of Tapiosinn TV Logos")
+					if Settings.EnableTapiosinnTVLogos {
+						go func() {
+							buildLogos()
+							response.Tvlogos = Data.TVLogos.Files
+						}()
+					}
 				}
 
 				if Settings.HostIP != previousHostIP {
@@ -495,7 +500,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 					initBufferVFS(Settings.StoreBufferInRAM)
 				}
 
-				if Settings.ClearXMLTVCache && previousClearXMLTVCache == false {
+				if Settings.ClearXMLTVCache && !previousClearXMLTVCache {
 					clearXMLTVCache()
 				}
 
@@ -637,7 +642,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 			var requestMap = make(map[string]interface{}) // Debug
 			_ = requestMap
-			if System.Dev == true {
+			if System.Dev {
 				fmt.Println(mapToJSON(requestMap))
 			}
 
@@ -650,7 +655,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response = setDefaultResponseData(response, true)
-		if System.ConfigurationWizard == true {
+		if System.ConfigurationWizard {
 			response.ConfigurationWizard = System.ConfigurationWizard
 		}
 
@@ -677,7 +682,7 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	setGlobalDomain(r.Host)
 
-	if System.Dev == true {
+	if System.Dev {
 
 		lang, err = loadJSONFileToMap(fmt.Sprintf("html/lang/%s.json", Settings.Language))
 		if err != nil {
@@ -751,7 +756,7 @@ func Web(w http.ResponseWriter, r *http.Request) {
 					}
 					// Redirect so that the Data is deleted from the Browser.
 					w = authentication.SetCookieToken(w, token)
-					http.Redirect(w, r, "/web", 301)
+					http.Redirect(w, r, "/web", http.StatusMovedPermanently)
 					return
 
 				}
@@ -767,11 +772,11 @@ func Web(w http.ResponseWriter, r *http.Request) {
 					}
 
 					w = authentication.SetCookieToken(w, token)
-					http.Redirect(w, r, "/web", 301) // Redirect so that the Data is deleted from the Browser.
+					http.Redirect(w, r, "/web", http.StatusMovedPermanently) // Redirect so that the Data is deleted from the Browser.
 
 				} else {
 					w = authentication.SetCookieToken(w, "-")
-					http.Redirect(w, r, "/web", 301) // Redirect so that the Data is deleted from the Browser.
+					http.Redirect(w, r, "/web", http.StatusMovedPermanently) // Redirect so that the Data is deleted from the Browser.
 				}
 
 				return
@@ -800,7 +805,7 @@ func Web(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			if len(allUserData) == 0 && Settings.AuthenticationWEB == true {
+			if len(allUserData) == 0 && Settings.AuthenticationWEB {
 				file = requestFile + "create-first-user.html"
 			}
 
@@ -840,7 +845,7 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	contentType = getContentType(requestFile)
 
-	if System.Dev == true {
+	if System.Dev {
 		// Local web server Files are loaded, only for Development
 		content, _ = readStringFromFile(requestFile)
 	}
@@ -916,13 +921,12 @@ func API(w http.ResponseWriter, r *http.Request) {
 		response.Status = false
 		response.Error = err.Error()
 		w.Write([]byte(mapToJSON(response)))
-		return
 
 	}
 
 	response.Status = true
 
-	if Settings.API == false {
+	if !Settings.API {
 		httpStatusError(w, r, 423)
 		return
 	}
@@ -948,7 +952,7 @@ func API(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
 
-	if Settings.AuthenticationAPI == true {
+	if Settings.AuthenticationAPI {
 		var token string
 		switch len(request.Token) {
 		case 0:
@@ -1045,7 +1049,6 @@ func API(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(mapToJSON(response)))
 
-	return
 }
 
 // Download : File Download
@@ -1063,7 +1066,7 @@ func Download(w http.ResponseWriter, r *http.Request) {
 
 	os.RemoveAll(System.Folder.Temp + getFilenameFromPath(path))
 	w.Write([]byte(content))
-	return
+
 }
 
 func setDefaultResponseData(response ResponseStruct, data bool) (defaults ResponseStruct) {
@@ -1089,7 +1092,7 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 	switch System.Branch {
 
 	case "master":
-		defaults.ClientInfo.Version = fmt.Sprintf("%s", System.Version)
+		defaults.ClientInfo.Version = System.Version
 
 	default:
 		defaults.ClientInfo.Version = fmt.Sprintf("%s (%s)", System.Version, System.Build)
@@ -1097,7 +1100,7 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 	}
 
-	if data == true {
+	if data {
 
 		defaults.Users, _ = authentication.GetAllUserData()
 		//defaults.DVR = System.DVRAddress
@@ -1124,6 +1127,18 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 		}
 
+		if Settings.EnableTapiosinnTVLogos {
+
+			var tvLogos = make(map[string]interface{})
+
+			if len(Data.TVLogos.Files) > 0 {
+				tvLogos["files"] = Data.TVLogos.Files
+			}
+
+			defaults.Tvlogos = tvLogos
+
+		}
+
 		defaults.Settings = Settings
 
 		defaults.Data.Playlist.M3U.Groups.Text = Data.Playlist.M3U.Groups.Text
@@ -1138,7 +1153,6 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 func httpStatusError(w http.ResponseWriter, r *http.Request, httpStatusCode int) {
 	http.Error(w, fmt.Sprintf("%s [%d]", http.StatusText(httpStatusCode), httpStatusCode), httpStatusCode)
-	return
 }
 
 func getContentType(filename string) (contentType string) {
