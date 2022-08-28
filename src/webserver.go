@@ -109,7 +109,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	var path = r.URL.Path
 	var debug string
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName)
+	} else {
+		setGlobalDomain(Settings.HostIP)
+	}
 
 	debug = fmt.Sprintf("Web Server Request:Path: %s", path)
 	showDebug(debug, 2)
@@ -264,7 +268,11 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 	var path = strings.TrimPrefix(r.URL.Path, "/")
 	var groups = []string{}
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName)
+	} else {
+		setGlobalDomain(Settings.HostIP)
+	}
 
 	// XMLTV File
 	if strings.Contains(path, "xmltv/") {
@@ -388,7 +396,11 @@ func WS(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName)
+	} else {
+		setGlobalDomain(Settings.HostIP)
+	}
 
 	for {
 
@@ -708,7 +720,11 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	var language LanguageUI
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName)
+	} else {
+		setGlobalDomain(Settings.HostIP)
+	}
 
 	if System.Dev {
 
@@ -937,7 +953,11 @@ func API(w http.ResponseWriter, r *http.Request) {
 			}
 	*/
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName)
+	} else {
+		setGlobalDomain(Settings.HostIP)
+	}
 	var request APIRequestStruct
 	var response APIResponseStruct
 
