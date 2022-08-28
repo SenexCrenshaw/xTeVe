@@ -59,6 +59,14 @@ func checkVFSFolder(path string, vfs avfs.VFS) (err error) {
 	if fsIsNotExistErr(err) {
 		// Folder does not exist, will now be created
 
+		// If we are on Windows and the cache location path is NOT on C:\ we need to create the volume it is located on
+		// Failure to do so here will result in a panic error and the stream not playing
+		vm := vfs.(avfs.VolumeManager)
+		vfsUtils := avfs.NewUtils(vfs.OSType())
+		if vfs.OSType() == avfs.OsWindows && vfsUtils.VolumeName(path) != "C:" {
+			vm.VolumeAdd(path)
+		}
+
 		err = vfs.MkdirAll(getPlatformPath(path), 0755)
 		if err == nil {
 
