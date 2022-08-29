@@ -1779,8 +1779,9 @@ function openPopUp(dataType, element) {
     default:
       break;
   }
-  
-  previewChannelLogo(currentLogoUrl)
+  if (dataType == "mapping") {
+    previewChannelLogo(currentLogoUrl)
+  }
   showPopUpElement('popup-custom');
 }
 
