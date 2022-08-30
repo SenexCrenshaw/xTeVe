@@ -238,7 +238,7 @@
     "channelLogo": {
       "title": "Logo URL",
       "placeholder": "",
-      "description": ""
+      "description": "URL for the logo. You can type in this field to search Tapiosinn's tv-logos repository"
     },
     "channelLogoPreview": {
       "title": "Channel Logo Preview",
