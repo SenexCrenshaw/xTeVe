@@ -160,7 +160,7 @@ func Init() (err error) {
 	if Settings.EnableTapiosinnTVLogos {
 		// Run this in the background, can take a little bit to fetch the data
 		go func() {
-			buildLogos()
+			downloadLogoJSON()
 		}()
 	}
 

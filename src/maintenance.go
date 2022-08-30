@@ -61,7 +61,7 @@ func maintenance() {
 					buildXEPG(false)
 
 					// Check if TV logos JSON needs updating
-					buildLogos()
+					downloadLogoJSON()
 				}
 
 			}

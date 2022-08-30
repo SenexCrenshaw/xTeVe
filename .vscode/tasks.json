@@ -25,7 +25,7 @@
 		{
 			"label": "Build webUI",
 			"type": "shell",
-			"command": "test -f './xteve' && ./xteve -buildwebui",
+			"command": "cd ts && bash build_webUI.sh",
 			"presentation": {
 				"reveal": "always",
 				"panel": "new"

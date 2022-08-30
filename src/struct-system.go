@@ -171,8 +171,12 @@ type DataStruct struct {
 		XEPGCount int64
 	}
 
-	TVLogos struct {
-		Files map[string]interface{}
+	// TVLogos struct {
+	// 	Files map[string]interface{}
+	// }
+
+	Logos struct {
+		logoInformation []LogoInformation
 	}
 }
 

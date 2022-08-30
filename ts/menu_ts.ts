@@ -1,17 +1,17 @@
 
 class MainMenu {
-  DocumentID:string = "main-menu"
-  HTMLTag:string = "LI"
-  ImagePath:string = "img/"
-  
-  createIMG(src):any {
+  DocumentID: string = "main-menu"
+  HTMLTag: string = "LI"
+  ImagePath: string = "img/"
+
+  createIMG(src): any {
     let element = document.createElement("IMG")
     element.setAttribute("src", this.ImagePath + src)
     element.setAttribute("alt", src)
     return element
   }
 
-  createValue(value):any {
+  createValue(value): any {
     let element = document.createElement("P")
     element.innerHTML = value
     return element
@@ -19,14 +19,14 @@ class MainMenu {
 }
 
 class MainMenuItem extends MainMenu {
-  menuKey:string
-  value:string
-  imgSrc:string
-  headline:string
-  id:string
-  tableHeader:string[]
+  menuKey: string
+  value: string
+  imgSrc: string
+  headline: string
+  id: string
+  tableHeader: string[]
 
-  constructor(menuKey:string, value:string, image:string, headline:string) {
+  constructor(menuKey: string, value: string, image: string, headline: string) {
     super()
     this.menuKey = menuKey
     this.value = value
@@ -34,33 +34,33 @@ class MainMenuItem extends MainMenu {
     this.headline = headline
   }
 
-  createItem():void {
+  createItem(): void {
     let item = document.createElement("LI")
     item.setAttribute("onclick", "javascript: openThisMenu(this)")
     item.setAttribute("id", this.id)
     let img = this.createIMG(this.imgSrc)
     let value = this.createValue(this.value)
-    
+
     item.appendChild(img)
     item.appendChild(value)
 
     let doc = document.getElementById(this.DocumentID)
     doc.appendChild(item)
 
-    switch(this.menuKey) {
-      case "playlist": 
+    switch (this.menuKey) {
+      case "playlist":
         this.tableHeader = ["{{.playlist.table.playlist}}", "{{.playlist.table.tuner}}", "{{.playlist.table.lastUpdate}}", "{{.playlist.table.availability}} %", "{{.playlist.table.type}}", "{{.playlist.table.streams}}", "{{.playlist.table.groupTitle}} %", "{{.playlist.table.tvgID}} %", "{{.playlist.table.uniqueID}} %"]
         break
-      
-      case "xmltv": 
+
+      case "xmltv":
         this.tableHeader = ["{{.xmltv.table.guide}}", "{{.xmltv.table.lastUpdate}}", "{{.xmltv.table.availability}} %", "{{.xmltv.table.channels}}", "{{.xmltv.table.programs}}"]
         break
 
-      case "filter": 
+      case "filter":
         this.tableHeader = ["{{.filter.table.startingChannel}}", "{{.filter.table.name}}", "{{.filter.table.type}}", "{{.filter.table.filter}}"]
         break
 
-      case "users": 
+      case "users":
         this.tableHeader = ["{{.users.table.username}}", "{{.users.table.password}}", "{{.users.table.web}}", "{{.users.table.pms}}", "{{.users.table.m3u}}", "{{.users.table.xml}}", "{{.users.table.api}}"]
         break
 
@@ -69,139 +69,139 @@ class MainMenuItem extends MainMenu {
         break
 
     }
-    
+
   }
 }
 
 class Content {
 
-  DocumentID:string = "content"
-  TableID:string = "content_table"
-  DivID:string
-  headerClass:string = "content_table_header"
-  interactionID:string = "content-interaction"
+  DocumentID: string = "content"
+  TableID: string = "content_table"
+  DivID: string
+  headerClass: string = "content_table_header"
+  interactionID: string = "content-interaction"
 
-  createHeadline(value):any {
+  createHeadline(value): any {
     let element = document.createElement("H3")
     element.innerHTML = value
     return element
   }
 
-  createHR():any {
+  createHR(): any {
     return document.createElement("HR")
   }
 
-  createInteraction():any {
+  createInteraction(): any {
     let element = document.createElement("DIV")
     element.setAttribute("id", this.interactionID)
     return element
   }
 
-  createDIV():any {
+  createDIV(): any {
     let element = document.createElement("DIV")
     element.id = this.DivID
     return element
   }
 
-  createTABLE():any {
+  createTABLE(): any {
     let element = document.createElement("TABLE")
     element.id = this.TableID
     return element
   }
 
-  createTableRow():any {
+  createTableRow(): any {
     let element = document.createElement("TR")
     element.className = this.headerClass
     return element
   }
 
-  createTableContent(menuKey:string):string[] {
+  createTableContent(menuKey: string): string[] {
 
     let data = {}
     let rows = []
     let fileTypes = []
 
-    switch(menuKey) {
+    switch (menuKey) {
       case "playlist":
         fileTypes = ["m3u", "hdhr"]
 
         fileTypes.forEach(fileType => {
-          
+
           data = SERVER["settings"]["files"][fileType]
-        
+
           var keys = getOwnObjProps(data)
-          
+
           keys.forEach(key => {
             var tr = document.createElement("TR")
             tr.id = key
-            
+
             tr.setAttribute('onclick', 'javascript: openPopUp("' + fileType + '", this)')
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
-            cell.value = data[key]["name"] 
+            cell.value = data[key]["name"]
             tr.appendChild(cell.createCell())
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             if (SERVER["settings"]["buffer"] != "-") {
-              cell.value = data[key]["tuner"] 
+              cell.value = data[key]["tuner"]
             } else {
               cell.value = "-"
             }
-            
+
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["last.update"]
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["provider.availability"]
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["type"].toUpperCase();
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["compatibility"]["streams"]
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["compatibility"]["group.title"]
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["compatibility"]["tvg.id"]
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["compatibility"]["stream.id"]
             tr.appendChild(cell.createCell())
-            
+
             rows.push(tr)
           });
-        
+
         });
         break
-      
+
       case "filter":
         delete SERVER["settings"]["filter"][-1]
         data = SERVER["settings"]["filter"]
@@ -212,19 +212,19 @@ class Content {
 
           tr.setAttribute('onclick', 'javascript: openPopUp("' + data[key]["type"] + '", this)')
 
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           cell.value = data[key]["startingChannel"]
           tr.appendChild(cell.createCell())
 
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           cell.value = data[key]["name"]
           tr.appendChild(cell.createCell())
 
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           switch (data[key]["type"]) {
@@ -242,7 +242,7 @@ class Content {
 
           tr.appendChild(cell.createCell())
 
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           cell.value = data[key]["filter"]
@@ -268,31 +268,31 @@ class Content {
             tr.id = key
             tr.setAttribute('onclick', 'javascript: openPopUp("' + fileType + '", this)')
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["name"]
             tr.appendChild(cell.createCell())
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["last.update"]
             tr.appendChild(cell.createCell())
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["provider.availability"]
             tr.appendChild(cell.createCell())
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["compatibility"]["xmltv.channels"]
             tr.appendChild(cell.createCell())
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = data[key]["compatibility"]["xmltv.programs"]
@@ -309,27 +309,27 @@ class Content {
 
         fileTypes.forEach(fileType => {
           data = SERVER[fileType]
-      
+
           var keys = getOwnObjProps(data)
-    
+
           keys.forEach(key => {
             var tr = document.createElement("TR")
             tr.id = key
             tr.setAttribute('onclick', 'javascript: openPopUp("' + fileType + '", this)')
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
-            cell.value = data[key]["data"]["username"] 
+            cell.value = data[key]["data"]["username"]
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             cell.value = "******"
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             if (data[key]["data"]["authentication.web"] == true) {
@@ -338,8 +338,8 @@ class Content {
               cell.value = "-"
             }
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             if (data[key]["data"]["authentication.pms"] == true) {
@@ -348,8 +348,8 @@ class Content {
               cell.value = "-"
             }
             tr.appendChild(cell.createCell())
-            
-            var cell:Cell = new Cell()
+
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             if (data[key]["data"]["authentication.m3u"] == true) {
@@ -359,7 +359,7 @@ class Content {
             }
             tr.appendChild(cell.createCell())
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             if (data[key]["data"]["authentication.xml"] == true) {
@@ -369,7 +369,7 @@ class Content {
             }
             tr.appendChild(cell.createCell())
 
-            var cell:Cell = new Cell()
+            var cell: Cell = new Cell()
             cell.child = true
             cell.childType = "P"
             if (data[key]["data"]["authentication.api"] == true) {
@@ -378,10 +378,10 @@ class Content {
               cell.value = "-"
             }
             tr.appendChild(cell.createCell())
-            
+
             rows.push(tr)
           });
-        
+
         });
         break
 
@@ -400,28 +400,28 @@ class Content {
             case true:
               tr.className = "activeEPG"
               break;
-          
+
             case false:
               tr.className = "notActiveEPG"
               break;
           }
-          
+
           // Bulk
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "BULK"
           cell.value = false
           tr.appendChild(cell.createCell())
 
           // Channel number
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "INPUTCHANNEL"
           cell.value = data[key]["x-channelID"]
           tr.appendChild(cell.createCell())
 
           // Logo
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "IMG"
           cell.imageURL = data[key]["tvg-logo"]
@@ -430,30 +430,30 @@ class Content {
           td.id = key
 
           tr.appendChild(td)
-  
+
           // Channel name
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           cell.className = data[key]["x-category"]
           cell.value = data[key]["x-name"]
           var td = cell.createCell()
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
-          td.id = key          
+          td.id = key
           tr.appendChild(td)
 
           // Update channel name regex
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           cell.value = data[key]["update-channel-name-regex"]
           var td = cell.createCell()
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
-          td.id = key          
+          td.id = key
           tr.appendChild(td)
 
           // Playlist
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           cell.value = getValueFromProviderFile(data[key]["_file.m3u.id"], "m3u", "name")
@@ -461,36 +461,36 @@ class Content {
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
           td.id = key
           tr.appendChild(td)
-          
+
 
           // Group (group-title)
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
-          cell.value = data[key]["x-group-title"] 
+          cell.value = data[key]["x-group-title"]
           var td = cell.createCell()
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
           td.id = key
           tr.appendChild(td)
 
           // XMLTV file
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
 
-          if (data[key]["x-xmltv-file"] != "-") {            
-            cell.value = getValueFromProviderFile(data[key]["x-xmltv-file"], "xmltv", "name") 
+          if (data[key]["x-xmltv-file"] != "-") {
+            cell.value = getValueFromProviderFile(data[key]["x-xmltv-file"], "xmltv", "name")
           } else {
             cell.value = data[key]["x-xmltv-file"]
           }
-          
+
           var td = cell.createCell()
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
           td.id = key
-          tr.appendChild(td)          
+          tr.appendChild(td)
 
           // XMLTV Channel
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           var value = data[key]["x-mapping"]
@@ -504,7 +504,7 @@ class Content {
           tr.appendChild(td)
 
           // TimeShift
-          var cell:Cell = new Cell()
+          var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "P"
           cell.value = data[key]["x-timeshift"]
@@ -535,29 +535,29 @@ class Content {
 }
 
 class Cell {
-  child:Boolean
-  childType:string
-  value:any
-  className:string
-  tdClassName:string
-  imageURL:string
-  onclick:boolean
-  onclickFunction:string
+  child: Boolean
+  childType: string
+  value: any
+  className: string
+  tdClassName: string
+  imageURL: string
+  onclick: boolean
+  onclickFunction: string
 
-  createCell():any {
+  createCell(): any {
     let td = document.createElement("TD")
 
 
     if (this.child == true) {
-      var element:any
+      var element: any
 
-      switch(this.childType){
-        case "P": 
+      switch (this.childType) {
+        case "P":
           element = document.createElement(this.childType);
           element.innerHTML = this.value
           element.className = this.className
           break
-        
+
         case "INPUT":
           element = document.createElement(this.childType);
           (element as HTMLInputElement).value = this.value;
@@ -588,15 +588,15 @@ class Cell {
 
         case "IMG":
           element = document.createElement(this.childType);
-          element.setAttribute("src", this.imageURL)  
+          element.setAttribute("src", this.imageURL)
           if (this.imageURL != "") {
-            element.setAttribute("onerror", "javascript: this.onerror=null;this.src=''" )
+            element.setAttribute("onerror", "javascript: this.onerror=null;this.src=''")
             //onerror="this.onerror=null;this.src='missing.gif';"
           }
       }
-      
+
       td.appendChild(element)
-      
+
     } else {
       td.innerHTML = this.value
     }
@@ -609,7 +609,7 @@ class Cell {
     if (this.tdClassName != undefined) {
       td.className = this.tdClassName
     }
-  
+
     return td
   }
 
@@ -617,15 +617,15 @@ class Cell {
 }
 
 class ShowContent extends Content {
-  menuID:number
+  menuID: number
 
-  constructor(menuID:number) {
+  constructor(menuID: number) {
     super()
     this.menuID = menuID
   }
 
-  createInput(type:string, name:string, value:string,):any {
-    
+  createInput(type: string, name: string, value: string,): any {
+
     let input = document.createElement("INPUT")
     input.setAttribute("type", type)
     input.setAttribute("name", name)
@@ -635,7 +635,7 @@ class ShowContent extends Content {
     return input
   }
 
-  show():void {
+  show(): void {
     COLUMN_TO_SORT = -1
     // Delete old content
     let doc = document.getElementById(this.DocumentID)
@@ -643,8 +643,8 @@ class ShowContent extends Content {
     showPreview(false)
 
     // Headline
-    let headline:string[] = menuItems[this.menuID].headline
-    
+    let headline: string[] = menuItems[this.menuID].headline
+
     let menuKey = menuItems[this.menuID].menuKey
     let h = this.createHeadline(headline)
     doc.appendChild(h)
@@ -653,7 +653,7 @@ class ShowContent extends Content {
     doc.appendChild(hr)
 
     // Interaction
-    let div =this.createInteraction()
+    let div = this.createInteraction()
     doc.appendChild(div)
     let interaction = document.getElementById(this.interactionID)
     switch (menuKey) {
@@ -671,7 +671,7 @@ class ShowContent extends Content {
         interaction.appendChild(input)
         break;
 
-        
+
       case "xmltv":
         var input = this.createInput("button", menuKey, "{{.button.new}}")
         input.setAttribute("id", "xmltv")
@@ -738,7 +738,7 @@ class ShowContent extends Content {
         wrapper.appendChild(settings)
 
         showSettings()
-        
+
         return
 
       case "log":
@@ -766,9 +766,9 @@ class ShowContent extends Content {
       default:
         break;
     }
-    
+
     // Create table (if needed)
-    var tableHeader:string[] = menuItems[this.menuID].tableHeader
+    var tableHeader: string[] = menuItems[this.menuID].tableHeader
     if (tableHeader.length > 0) {
       var wrapper = document.createElement("DIV")
       doc.appendChild(wrapper)
@@ -782,7 +782,7 @@ class ShowContent extends Content {
 
       // Table header
       tableHeader.forEach(element => {
-        var cell:Cell = new Cell()
+        var cell: Cell = new Cell()
         cell.child = true
         cell.childType = "P"
         cell.value = element
@@ -792,13 +792,13 @@ class ShowContent extends Content {
         }
 
         if (menuKey == "mapping") {
-          
+
           if (element == "{{.mapping.table.chNo}}") {
             cell.onclick = true
             cell.onclickFunction = "javascript: sortTable(1);"
             cell.tdClassName = "sortThis"
           }
-          
+
           if (element == "{{.mapping.table.channelName}}") {
             cell.onclick = true
             cell.onclickFunction = "javascript: sortTable(3);"
@@ -808,24 +808,24 @@ class ShowContent extends Content {
             cell.onclick = true
             cell.onclickFunction = "javascript: sortTable(4);"
           }
-  
+
           if (element == "{{.mapping.table.playlist}}") {
             cell.onclick = true
             cell.onclickFunction = "javascript: sortTable(5);"
           }
-  
+
           if (element == "{{.mapping.table.groupTitle}}") {
             cell.onclick = true
             cell.onclickFunction = "javascript: sortTable(6);"
           }
-  
+
           if (element == "{{.mapping.table.timeshift}}") {
             cell.onclick = true
             cell.onclickFunction = "javascript: sortTable(9);"
           }
 
         }
-        
+
         if (menuKey == "filter") {
 
           if (element == "{{.filter.table.startingChannel}}") {
@@ -857,11 +857,11 @@ class ShowContent extends Content {
       table.appendChild(header)
 
       // Content of the table
-      var rows:any = this.createTableContent(menuKey) 
+      var rows: any = this.createTableContent(menuKey)
       rows.forEach(tr => {
         table.appendChild(tr)
       });
-      
+
     }
 
     switch (menuKey) {
@@ -873,7 +873,7 @@ class ShowContent extends Content {
         showPreview(true)
         sortTable(0)
         break
-      
+
       default:
         COLUMN_TO_SORT = -1
         sortTable(0)
@@ -882,22 +882,22 @@ class ShowContent extends Content {
 
     showElement("loading", false)
   }
-  
+
 }
 
 function PageReady() {
 
-  let server:Server = new Server("getServerConfig")
+  let server: Server = new Server("getServerConfig")
   server.request({})
 
-  window.addEventListener("resize", function(){
+  window.addEventListener("resize", function () {
     calculateWrapperHeight();
   }, true);
 
-  setInterval(function(){ 
+  setInterval(function () {
     updateLog()
   }, 10000);
- 
+
 
   return
 }
@@ -908,17 +908,17 @@ function createLayout() {
   let obj = SERVER["clientInfo"]
   let keys = getOwnObjProps(obj);
   for (var i = 0; i < keys.length; i++) {
-     
+
     if (document.getElementById(keys[i])) {
       document.getElementById(keys[i]).innerHTML = obj[keys[i]];
       if (location.protocol === 'https:') {
-        if (keys[i] === "xepg-url" || keys[i] === "m3u-url"  || keys[i] === "DVR") {          
+        if (keys[i] === "xepg-url" || keys[i] === "m3u-url" || keys[i] === "DVR") {
           document.getElementById(keys[i]).addEventListener('click', function (event) {
-            const target = event.target as HTMLElement;        
-            navigator.clipboard.writeText(target.innerText.split(" ")[0]).then(() => {});
-          },false);
+            const target = event.target as HTMLElement;
+            navigator.clipboard.writeText(target.innerText.split(" ")[0]).then(() => { });
+          }, false);
         }
-      }      
+      }
     }
   }
 
@@ -931,7 +931,7 @@ function createLayout() {
   // Create menu
   document.getElementById("main-menu").innerHTML = ""
   for (let i = 0; i < menuItems.length; i++) {
-    
+
     menuItems[i].id = i
 
     switch (menuItems[i]["menuKey"]) {
@@ -946,7 +946,7 @@ function createLayout() {
       case "mapping":
       case "xmltv":
         if (SERVER["clientInfo"]["epgSource"] == "XEPG") {
-          menuItems[i].createItem()          
+          menuItems[i].createItem()
         }
         break
 
@@ -954,7 +954,7 @@ function createLayout() {
         menuItems[i].createItem()
         break
     }
-     
+
   }
 
   return
@@ -962,7 +962,7 @@ function createLayout() {
 
 function openThisMenu(element) {
   let id = element.id
-  let content:ShowContent = new ShowContent(id)
+  let content: ShowContent = new ShowContent(id)
   content.show()
   calculateWrapperHeight()
 
@@ -970,24 +970,24 @@ function openThisMenu(element) {
 }
 
 class PopupWindow {
-  DocumentID:string = "popup-custom"
-  InteractionID:string = "interaction"
+  DocumentID: string = "popup-custom"
+  InteractionID: string = "interaction"
   doc = document.getElementById(this.DocumentID)
 
-  createTitle(title:string):any {
+  createTitle(title: string): any {
     let td = document.createElement("TD")
     td.className = "left"
     td.innerHTML = title + ":"
     return td
   }
 
-  createContent(element):any {
+  createContent(element): any {
     let td = document.createElement("TD")
     td.appendChild(element)
     return td
   }
 
-  createInteraction():any {
+  createInteraction(): any {
     let div = document.createElement("div")
     div.setAttribute("id", "popup-interaction")
     div.className = "interaction"
@@ -995,11 +995,11 @@ class PopupWindow {
   }
 }
 
-class PopupContent extends PopupWindow{
-  
+class PopupContent extends PopupWindow {
+
   table = document.createElement("TABLE")
 
-  createHeadline(headline):void {
+  createHeadline(headline): void {
     this.doc.innerHTML = ""
     var element = document.createElement("H3")
     element.innerHTML = headline.toUpperCase()
@@ -1010,14 +1010,14 @@ class PopupContent extends PopupWindow{
     this.doc.appendChild(this.table)
   }
 
-  appendRow(title:string, element:any):void {
+  appendRow(title: string, element: any): void {
     let tr = document.createElement("TR")
-    
+
     // Title
     if (title.length != 0) {
       tr.appendChild(this.createTitle(title))
     }
-    
+
 
     // Content
     tr.appendChild(this.createContent(element))
@@ -1025,20 +1025,20 @@ class PopupContent extends PopupWindow{
   }
 
 
-  createInput(type:string, name:string, value:string):any {
+  createInput(type: string, name: string, value: string): any {
 
     let input = document.createElement("INPUT")
     if (value == undefined) {
       value = ""
     }
-    
+
     input.setAttribute("type", type)
     input.setAttribute("name", name)
     input.setAttribute("value", value)
     return input
   }
 
-  createCheckbox(name:string):any {
+  createCheckbox(name: string): any {
     let input = document.createElement("INPUT")
 
     input.setAttribute("type", "checkbox")
@@ -1047,7 +1047,7 @@ class PopupContent extends PopupWindow{
   }
 
   // Creates a selection of multiple options values with text descriptions
-  createSelect(text:string[], values:string[], set:string, dbKey:string):any {
+  createSelect(text: string[], values: string[], set: string, dbKey: string): any {
     let select = document.createElement("SELECT")
     select.setAttribute("name", dbKey)
     for (let i = 0; i < text.length; i++) {
@@ -1056,7 +1056,7 @@ class PopupContent extends PopupWindow{
       option.innerText = text[i]
       select.appendChild(option)
     }
-    if(set != "") {
+    if (set != "") {
       (select as HTMLSelectElement).value = set
     }
 
@@ -1067,14 +1067,14 @@ class PopupContent extends PopupWindow{
     return select
   }
 
-  selectOption(select:any, value:string):any {
+  selectOption(select: any, value: string): any {
     //select.selectedOptions = value
-    let s:HTMLSelectElement = (select as HTMLSelectElement)
-    s.options[s.selectedIndex].value = value 
+    let s: HTMLSelectElement = (select as HTMLSelectElement)
+    s.options[s.selectedIndex].value = value
     return select
   }
 
-  description(value:string):any {
+  description(value: string): any {
     let tr = document.createElement("TR")
     let td = document.createElement("TD")
     let span = document.createElement("PRE")
@@ -1084,12 +1084,12 @@ class PopupContent extends PopupWindow{
     tr.appendChild(td)
 
     tr.appendChild(this.createContent(span))
-    
+
     this.table.appendChild(tr)
   }
 
   // Interaction
-  addInteraction(element:any) {
+  addInteraction(element: any) {
     let interaction = document.getElementById("popup-interaction")
     interaction.appendChild(element)
   }
@@ -1097,8 +1097,8 @@ class PopupContent extends PopupWindow{
 
 function openPopUp(dataType, element) {
 
-  let data:object = {};
-  let id:any
+  let data: object = {};
+  let id: any
   switch (element) {
     case undefined:
 
@@ -1106,7 +1106,7 @@ function openPopUp(dataType, element) {
         case "group-title":
           if (id == undefined) {
             id = -1
-          }  
+          }
           data = getLocalData("filter", id)
           data["type"] = "group-title"
           break;
@@ -1118,7 +1118,7 @@ function openPopUp(dataType, element) {
           data = getLocalData("filter", id)
           data["type"] = "custom-filter"
           break;
-      
+
         default:
           data["id.provider"] = "-"
           data["type"] = dataType
@@ -1127,22 +1127,22 @@ function openPopUp(dataType, element) {
       }
 
       break
-  
+
     default:
       id = element.id
-      data = getLocalData(dataType, id)      
+      data = getLocalData(dataType, id)
       break;
   }
 
-  let content:PopupContent = new PopupContent()
-  let currentLogoUrl:string
+  let content: PopupContent = new PopupContent()
+  let currentLogoUrl: string
 
   switch (dataType) {
-    case "playlist": 
+    case "playlist":
       content.createHeadline("{{.playlist.playlistType.title}}")
       // Type
-      var text:string[] = ["M3U", "HDHomeRun"]
-      var values:string[] = ["javascript: openPopUp('m3u')", "javascript: openPopUp('hdhr')"]
+      var text: string[] = ["M3U", "HDHomeRun"]
+      var values: string[] = ["javascript: openPopUp('m3u')", "javascript: openPopUp('hdhr')"]
       var select = content.createSelect(text, values, "", "type")
       select.setAttribute("id", "type")
       select.setAttribute("onchange", 'javascript: changeButtonAction(this, "next", "onclick")') // changeButtonAction
@@ -1165,39 +1165,39 @@ function openPopUp(dataType, element) {
     case "m3u":
       content.createHeadline(dataType)
       // Name
-      var dbKey:string = "name"
+      var dbKey: string = "name"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.playlist.name.placeholder}}")
       content.appendRow("{{.playlist.name.title}}", input)
 
       // Description
-      var dbKey:string = "description"
+      var dbKey: string = "description"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.playlist.description.placeholder}}")
       content.appendRow("{{.playlist.description.title}}", input)
-      
+
       // URL
-      var dbKey:string = "file.source"
+      var dbKey: string = "file.source"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.playlist.fileM3U.placeholder}}")
       content.appendRow("{{.playlist.fileM3U.title}}", input)
 
       // Tuner
       if (SERVER["settings"]["buffer"] != "-") {
-        var text:string[] = []
-        var values:string[] = []
+        var text: string[] = []
+        var values: string[] = []
 
         for (var i = 1; i <= 100; i++) {
           text.push(i.toString())
           values.push(i.toString())
         }
 
-        var dbKey:string = "tuner"
+        var dbKey: string = "tuner"
         var select = content.createSelect(text, values, data[dbKey], dbKey)
         select.setAttribute("onfocus", "javascript: return;")
         content.appendRow("{{.playlist.tuner.title}}", select)
       } else {
-        var dbKey:string = "tuner"
+        var dbKey: string = "tuner"
         if (data[dbKey] == undefined) {
           data[dbKey] = 1
         }
@@ -1212,29 +1212,29 @@ function openPopUp(dataType, element) {
       // Interation
       content.createInteraction()
       // Delete
-      if (data["id.provider"]!= "-") {
+      if (data["id.provider"] != "-") {
         var input = content.createInput("button", "delete", "{{.button.delete}}")
         input.className = "delete"
         input.setAttribute('onclick', 'javascript: savePopupData("m3u", "' + id + '", true, 0)')
-        content.addInteraction(input)     
+        content.addInteraction(input)
       } else {
         var input = content.createInput("button", "back", "{{.button.back}}")
         input.setAttribute("onclick", 'javascript: openPopUp("playlist")')
-        content.addInteraction(input)     
+        content.addInteraction(input)
       }
-    
+
       // Abort
       var input = content.createInput("button", "cancel", "{{.button.cancel}}")
       input.setAttribute("onclick", 'javascript: showElement("popup", false);')
       content.addInteraction(input)
-      
+
       // Update
-      if (data["id.provider"]!= "-") {
+      if (data["id.provider"] != "-") {
         var input = content.createInput("button", "update", "{{.button.update}}")
         input.setAttribute('onclick', 'javascript: savePopupData("m3u", "' + id + '", false, 1)')
         content.addInteraction(input)
       }
-    
+
       // Save
       var input = content.createInput("button", "save", "{{.button.save}}")
       input.setAttribute('onclick', 'javascript: savePopupData("m3u", "' + id + '", false, 0)')
@@ -1244,39 +1244,39 @@ function openPopUp(dataType, element) {
     case "hdhr":
       content.createHeadline(dataType)
       // Name
-      var dbKey:string = "name"
+      var dbKey: string = "name"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.playlist.name.placeholder}}")
       content.appendRow("{{.playlist.name.title}}", input)
 
       // Description
-      var dbKey:string = "description"
+      var dbKey: string = "description"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.playlist.description.placeholder}}")
       content.appendRow("{{.playlist.description.placeholder}}", input)
-      
+
       // URL
-      var dbKey:string = "file.source"
+      var dbKey: string = "file.source"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.playlist.fileHDHR.placeholder}}")
       content.appendRow("{{.playlist.fileHDHR.title}}", input)
 
       // Tuner
       if (SERVER["settings"]["buffer"] != "-") {
-        var text:string[] = []
-        var values:string[] = []
+        var text: string[] = []
+        var values: string[] = []
 
         for (var i = 1; i <= 100; i++) {
           text.push(i.toString())
           values.push(i.toString())
         }
 
-        var dbKey:string = "tuner"
+        var dbKey: string = "tuner"
         var select = content.createSelect(text, values, data[dbKey], dbKey)
         select.setAttribute("onfocus", "javascript: return;")
         content.appendRow("{{.playlist.tuner.title}}", select)
       } else {
-        var dbKey:string = "tuner"
+        var dbKey: string = "tuner"
         if (data[dbKey] == undefined) {
           data[dbKey] = 1
         }
@@ -1287,33 +1287,33 @@ function openPopUp(dataType, element) {
       }
 
       content.description("{{.playlist.tuner.description}}")
-      
+
       // Interaction
       content.createInteraction()
       // Delete
-      if (data["id.provider"]!= "-") {
+      if (data["id.provider"] != "-") {
         var input = content.createInput("button", "delete", "{{.button.delete}}")
         input.setAttribute('onclick', 'javascript: savePopupData("hdhr", "' + id + '", true, 0)')
         input.className = "delete"
-        content.addInteraction(input)     
+        content.addInteraction(input)
       } else {
         var input = content.createInput("button", "back", "{{.button.back}}")
         input.setAttribute("onclick", 'javascript: openPopUp("playlist")')
-        content.addInteraction(input)     
+        content.addInteraction(input)
       }
-    
+
       // Abort
       var input = content.createInput("button", "cancel", "{{.button.cancel}}")
       input.setAttribute("onclick", 'javascript: showElement("popup", false);')
       content.addInteraction(input)
-      
+
       // Update
-      if (data["id.provider"]!= "-") {
+      if (data["id.provider"] != "-") {
         var input = content.createInput("button", "update", "{{.button.update}}")
         input.setAttribute('onclick', 'javascript: savePopupData("hdhr", "' + id + '", false, 1)')
         content.addInteraction(input)
       }
-    
+
       // Save
       var input = content.createInput("button", "save", "{{.button.save}}")
       input.setAttribute('onclick', 'javascript: savePopupData("hdhr", "' + id + '", false, 0)')
@@ -1322,16 +1322,16 @@ function openPopUp(dataType, element) {
 
     case "filter":
       content.createHeadline(dataType)
-     
+
       // Type
-      var dbKey:string = "type"
-      var text:string[] = ["M3U: " + "{{.filter.type.groupTitle}}", "xTeVe: " + "{{.filter.type.customFilter}}"]
-      var values:string[] = ["javascript: openPopUp('group-title')", "javascript: openPopUp('custom-filter')"]
+      var dbKey: string = "type"
+      var text: string[] = ["M3U: " + "{{.filter.type.groupTitle}}", "xTeVe: " + "{{.filter.type.customFilter}}"]
+      var values: string[] = ["javascript: openPopUp('group-title')", "javascript: openPopUp('custom-filter')"]
       var select = content.createSelect(text, values, "javascript: openPopUp('group-title')", dbKey)
       select.setAttribute("id", id)
       select.setAttribute("onchange", 'javascript: changeButtonAction(this, "next", "onclick");') // changeButtonAction
       content.appendRow("{{.filter.type.title}}", select)
-      
+
       // Interaction
       content.createInteraction()
       // Abort
@@ -1346,55 +1346,55 @@ function openPopUp(dataType, element) {
       content.addInteraction(input)
       break
 
-    case "custom-filter": 
+    case "custom-filter":
     case "group-title":
-      
+
       switch (dataType) {
         case "custom-filter":
           content.createHeadline("{{.filter.custom}}" + " Filter")
           break;
-      
+
         case "group-title":
           content.createHeadline("{{.filter.group}}" + " Filter")
           break;
       }
 
       // Name      
-      var dbKey:string = "name"
+      var dbKey: string = "name"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.filter.name.placeholder}}")
       content.appendRow("{{.filter.name.title}}", input)
 
       // Description
-      var dbKey:string = "description"
+      var dbKey: string = "description"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.filter.description.placeholder}}")
       content.appendRow("{{.filter.description.title}}", input)
 
       // Type
-      var dbKey:string = "type"
+      var dbKey: string = "type"
       var input = content.createInput("hidden", dbKey, data[dbKey])
       content.appendRow("", input)
 
       var filterType = data[dbKey]
-      
+
       switch (filterType) {
 
         case "custom-filter":
           // Case sensitive
-          var dbKey:string = "caseSensitive"
+          var dbKey: string = "caseSensitive"
           var input = content.createCheckbox(dbKey)
           input.checked = data[dbKey]
           content.appendRow("{{.filter.caseSensitive.title}}", input)
-        
+
           // Filter Rule (Custom)
-          var dbKey:string = "filter"
+          var dbKey: string = "filter"
           var input = content.createInput("text", dbKey, data[dbKey])
           input.setAttribute("placeholder", "{{.filter.filterRule.placeholder}}")
           content.appendRow("{{.filter.filterRule.title}}", input)
 
           // Starting Channel Number Mapping
-          var dbKey:string = "startingChannel"
+          var dbKey: string = "startingChannel"
           var input = content.createInput("text", dbKey, data[dbKey])
           input.setAttribute("placeholder", "{{.filter.startingChannel.placeholder}}")
           content.appendRow("{{.filter.startingChannel.title}}", input)
@@ -1404,50 +1404,50 @@ function openPopUp(dataType, element) {
         case "group-title":
           //alert(dbKey + " " + filterType)
           // Filter based on the groups in the M3U
-          var dbKey:string = "filter"
+          var dbKey: string = "filter"
           var groupsM3U = getLocalData("m3uGroups", "")
-          var text:string[] = groupsM3U["text"]
-          var values:string[] = groupsM3U["value"]
-          
+          var text: string[] = groupsM3U["text"]
+          var values: string[] = groupsM3U["value"]
+
           var select = content.createSelect(text, values, data[dbKey], dbKey)
-          select.setAttribute("onchange", "javascript: this.className = 'changed'")  
+          select.setAttribute("onchange", "javascript: this.className = 'changed'")
           content.appendRow("{{.filter.filterGroup.title}}", select)
           content.description("{{.filter.filterGroup.description}}")
-          
+
           // Case sensetive
-          var dbKey:string = "caseSensitive"
+          var dbKey: string = "caseSensitive"
           var input = content.createCheckbox(dbKey)
           input.checked = data[dbKey]
           content.appendRow("{{.filter.caseSensitive.title}}", input)
-        
-          
-          var dbKey:string = "include"
+
+
+          var dbKey: string = "include"
           var input = content.createInput("text", dbKey, data[dbKey])
           input.setAttribute("placeholder", "{{.filter.include.placeholder}}")
-          
+
           content.appendRow("{{.filter.include.title}}", input)
           content.description("{{.filter.include.description}}")
-          
-          var dbKey:string = "exclude"
+
+          var dbKey: string = "exclude"
           var input = content.createInput("text", dbKey, data[dbKey])
           input.setAttribute("placeholder", "{{.filter.exclude.placeholder}}")
           content.appendRow("{{.filter.exclude.title}}", input)
           content.description("{{.filter.exclude.description}}")
 
           // Preserve M3U Playlist Channel Mapping
-          var dbKey:string = "preserveMapping"
+          var dbKey: string = "preserveMapping"
           var input = content.createCheckbox(dbKey)
           input.checked = data[dbKey]
           content.appendRow("{{.filter.preserveMapping.title}}", input)
 
           // Starting Channel Number Mapping
-          var dbKey:string = "startingChannel"
+          var dbKey: string = "startingChannel"
           var input = content.createInput("text", dbKey, data[dbKey])
           input.setAttribute("placeholder", "{{.filter.startingChannel.placeholder}}")
           content.appendRow("{{.filter.startingChannel.title}}", input)
 
           break;
-      
+
         default:
           break;
       }
@@ -1459,36 +1459,36 @@ function openPopUp(dataType, element) {
       var input = content.createInput("button", "delete", "{{.button.delete}}")
       input.setAttribute('onclick', 'javascript: savePopupData("filter", "' + id + '", true, 0)')
       input.className = "delete"
-      content.addInteraction(input)     
-      
+      content.addInteraction(input)
+
       // Abort
       var input = content.createInput("button", "cancel", "{{.button.cancel}}")
       input.setAttribute("onclick", 'javascript: showElement("popup", false);')
       content.addInteraction(input)
-    
+
       // Save
       var input = content.createInput("button", "save", "{{.button.save}}")
       input.setAttribute('onclick', 'javascript: savePopupData("filter", "' + id + '", false, 0)')
       content.addInteraction(input)
-      
+
       break
 
     case "xmltv":
       content.createHeadline(dataType)
       // Name
-      var dbKey:string = "name"
+      var dbKey: string = "name"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.xmltv.name.placeholder}}")
       content.appendRow("{{.xmltv.name.title}}", input)
 
       // Description
-      var dbKey:string = "description"
+      var dbKey: string = "description"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.xmltv.description.placeholder}}")
       content.appendRow("{{.xmltv.description.title}}", input)
-      
+
       // URL
-      var dbKey:string = "file.source"
+      var dbKey: string = "file.source"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.xmltv.fileXMLTV.placeholder}}")
       content.appendRow("{{.xmltv.fileXMLTV.title}}", input)
@@ -1496,25 +1496,25 @@ function openPopUp(dataType, element) {
       // Interaction
       content.createInteraction()
       // Delete
-      if (data["id.provider"]!= "-") {
+      if (data["id.provider"] != "-") {
         var input = content.createInput("button", "delete", "{{.button.delete}}")
         input.setAttribute('onclick', 'javascript: savePopupData("xmltv", "' + id + '", true, 0)')
         input.className = "delete"
-        content.addInteraction(input)     
+        content.addInteraction(input)
       }
-    
+
       // Abort
       var input = content.createInput("button", "cancel", "{{.button.cancel}}")
       input.setAttribute("onclick", 'javascript: showElement("popup", false);')
       content.addInteraction(input)
-      
+
       // Update
-      if (data["id.provider"]!= "-") {
+      if (data["id.provider"] != "-") {
         var input = content.createInput("button", "update", "{{.button.update}}")
         input.setAttribute('onclick', 'javascript: savePopupData("xmltv", "' + id + '", false, 1)')
         content.addInteraction(input)
       }
-    
+
       // Save
       var input = content.createInput("button", "save", "{{.button.save}}")
       input.setAttribute('onclick', 'javascript: savePopupData("xmltv", "' + id + '", false, 0)')
@@ -1524,25 +1524,25 @@ function openPopUp(dataType, element) {
     case "users":
       content.createHeadline("{{.mainMenu.item.users}}")
       // User name
-      var dbKey:string = "username"
+      var dbKey: string = "username"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.users.username.placeholder}}")
       content.appendRow("{{.users.username.title}}", input)
-    
+
       // New Parssword
-      var dbKey:string = "password"
+      var dbKey: string = "password"
       var input = content.createInput("password", dbKey, "")
       input.setAttribute("placeholder", "{{.users.password.placeholder}}")
       content.appendRow("{{.users.password.title}}", input)
-    
+
       // Confirmation
-      var dbKey:string = "confirm"
+      var dbKey: string = "confirm"
       var input = content.createInput("password", dbKey, "")
       input.setAttribute("placeholder", "{{.users.confirm.placeholder}}")
       content.appendRow("{{.users.confirm.title}}", input)
-    
+
       // Authentication WEB
-      var dbKey:string = "authentication.web"
+      var dbKey: string = "authentication.web"
       var input = content.createCheckbox(dbKey)
       input.checked = data[dbKey]
       if (data["defaultUser"] == true) {
@@ -1551,25 +1551,25 @@ function openPopUp(dataType, element) {
       content.appendRow("{{.users.web.title}}", input)
 
       // Authentication PMS
-      var dbKey:string = "authentication.pms"
+      var dbKey: string = "authentication.pms"
       var input = content.createCheckbox(dbKey)
       input.checked = data[dbKey]
       content.appendRow("{{.users.pms.title}}", input)
 
       // Authentication M3U
-      var dbKey:string = "authentication.m3u"
+      var dbKey: string = "authentication.m3u"
       var input = content.createCheckbox(dbKey)
       input.checked = data[dbKey]
       content.appendRow("{{.users.m3u.title}}", input)
 
       // Authentication XML
-      var dbKey:string = "authentication.xml"
+      var dbKey: string = "authentication.xml"
       var input = content.createCheckbox(dbKey)
       input.checked = data[dbKey]
       content.appendRow("{{.users.xml.title}}", input)
 
       // Authentication API
-      var dbKey:string = "authentication.api"
+      var dbKey: string = "authentication.api"
       var input = content.createCheckbox(dbKey)
       input.checked = data[dbKey]
       content.appendRow("{{.users.api.title}}", input)
@@ -1578,18 +1578,18 @@ function openPopUp(dataType, element) {
       content.createInteraction()
 
       // Delete
-      if (data["defaultUser"]!= true && id != "-") {
+      if (data["defaultUser"] != true && id != "-") {
         var input = content.createInput("button", "delete", "{{.button.delete}}")
         input.className = "delete"
         input.setAttribute('onclick', 'javascript: savePopupData("' + dataType + '", "' + id + '", true, 0)')
-        content.addInteraction(input)     
+        content.addInteraction(input)
       }
 
       // Abort
       var input = content.createInput("button", "cancel", "{{.button.cancel}}")
       input.setAttribute("onclick", 'javascript: showElement("popup", false);')
       content.addInteraction(input)
-      
+
       // Save
       var input = content.createInput("button", "save", "{{.button.save}}")
       input.setAttribute("onclick", 'javascript: savePopupData("' + dataType + '", "' + id + '", "false");')
@@ -1600,7 +1600,7 @@ function openPopUp(dataType, element) {
     case "mapping":
       content.createHeadline("{{.mainMenu.item.mapping}}")
       // Active
-      var dbKey:string = "x-active"
+      var dbKey: string = "x-active"
       var input = content.createCheckbox(dbKey)
       input.checked = data[dbKey]
       input.id = "active"
@@ -1609,7 +1609,7 @@ function openPopUp(dataType, element) {
       content.appendRow("{{.mapping.active.title}}", input)
 
       // Channel name
-      var dbKey:string = "x-name"
+      var dbKey: string = "x-name"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("onchange", "javascript: this.className = 'changed'")
       if (BULK_EDIT == true) {
@@ -1621,7 +1621,7 @@ function openPopUp(dataType, element) {
       content.description(data["name"])
 
       // Description
-      var dbKey:string = "x-description"
+      var dbKey: string = "x-description"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.mapping.description.placeholder}}")
       input.setAttribute("onchange", "javascript: this.className = 'changed'")
@@ -1630,7 +1630,7 @@ function openPopUp(dataType, element) {
       // Update the channel x-name
       if (data.hasOwnProperty("_uuid.key")) {
         if (data["_uuid.key"] != "") {
-          var dbKey:string = "x-update-channel-name"
+          var dbKey: string = "x-update-channel-name"
           var input = content.createCheckbox(dbKey)
           input.setAttribute("onchange", "javascript: this.className = 'changed'")
           input.checked = data[dbKey]
@@ -1639,7 +1639,7 @@ function openPopUp(dataType, element) {
       }
 
       // Channel name regex for updating the channel name
-      var dbKey:string = "update-channel-name-regex"
+      var dbKey: string = "update-channel-name-regex"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.mapping.updateChannelNameRegex.placeholder}}")
       input.setAttribute("onchange", "javascript: this.className = 'changed'")
@@ -1647,7 +1647,7 @@ function openPopUp(dataType, element) {
       content.description("{{.mapping.updateChannelNameRegex.description}}")
 
       // Channel group regex for updating the channel name
-      var dbKey:string = "update-channel-name-by-group-regex"
+      var dbKey: string = "update-channel-name-by-group-regex"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.mapping.updateChannelNameByGroupRegex.placeholder}}")
       input.setAttribute("onchange", "javascript: this.className = 'changed'")
@@ -1656,7 +1656,7 @@ function openPopUp(dataType, element) {
 
       // Logo URL (Channel) 
       if (SERVER['settings']['enableTapiosinnTVLogos']) {
-        var dbKey:string = "tvg-logo"
+        var dbKey: string = "tvg-logo"
         var logos = new TVLogosFile()
         currentLogoUrl = data[dbKey]
         const [logoContainer, logoInput, logoDatalist] = logos.newTvLogosIdPicker(currentLogoUrl)
@@ -1668,7 +1668,7 @@ function openPopUp(dataType, element) {
         logoDatalist.setAttribute('id', 'station-logo-picker-datalist')
         content.appendRow('{{.mapping.channelLogo.title}}', logoContainer);
       } else {
-        var dbKey:string = "tvg-logo"
+        var dbKey: string = "tvg-logo"
         currentLogoUrl = data[dbKey]
         var input = content.createInput("text", dbKey, data[dbKey])
         input.setAttribute("onchange", "javascript: this.className = 'changed'; previewChannelLogo(this.value)")
@@ -1677,14 +1677,14 @@ function openPopUp(dataType, element) {
       }
 
       // Logo URL preview
-      var dbKey:string = "tvg-logo-preview"
+      var dbKey: string = "tvg-logo-preview"
       var div = document.createElement("DIV")
       div.setAttribute('style', 'display:block; max-height:98px; max-width:100px;')
       div.setAttribute('id', 'station-logo-preview')
       content.appendRow('{{.mapping.channelLogoPreview.title}}', div);
 
       // Channel logo update
-      var dbKey:string = "x-update-channel-icon"
+      var dbKey: string = "x-update-channel-icon"
       var input = content.createCheckbox(dbKey)
       input.checked = data[dbKey]
       input.setAttribute("id", "update-icon")
@@ -1692,15 +1692,15 @@ function openPopUp(dataType, element) {
       content.appendRow("{{.mapping.updateChannelLogo.title}}", input)
 
       // Expand EPG category
-      var dbKey:string = "x-category"
-      var text:string[] = ["-", "Kids", "News", "Movie", "Series", "Sports"]
-      var values:string[] = ["", "Kids", "News", "Movie", "Series", "Sports"]
+      var dbKey: string = "x-category"
+      var text: string[] = ["-", "Kids", "News", "Movie", "Series", "Sports"]
+      var values: string[] = ["", "Kids", "News", "Movie", "Series", "Sports"]
       var select = content.createSelect(text, values, data[dbKey], dbKey)
-      select.setAttribute("onchange", "javascript: this.className = 'changed'")  
+      select.setAttribute("onchange", "javascript: this.className = 'changed'")
       content.appendRow("{{.mapping.epgCategory.title}}", select)
-      
+
       // M3U group title
-      var dbKey:string = "x-group-title"
+      var dbKey: string = "x-group-title"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("onchange", "javascript: this.className = 'changed'")
       input.dataset.oldValue = data[dbKey]
@@ -1713,7 +1713,7 @@ function openPopUp(dataType, element) {
       }
 
       // Update channel group checkbox
-      var dbKey:string = "x-update-channel-group"
+      var dbKey: string = "x-update-channel-group"
       var input = content.createCheckbox(dbKey)
       input.setAttribute("onchange", "javascript: toggleGroupUpdateCb('" + id + "', this);")
       input.checked = data[dbKey]
@@ -1744,13 +1744,13 @@ function openPopUp(dataType, element) {
       content.appendRow('{{.mapping.xmltvChannel.title}}', xmlTvIdContainer);
 
       // Timeshift
-      var dbKey:string = "x-timeshift"
+      var dbKey: string = "x-timeshift"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("onchange", "javascript: this.className = 'changed'")
       input.setAttribute("placeholder", "{{.mapping.timeshift.placeholder}}")
       input.setAttribute("id", "timeshift")
       content.appendRow("{{.mapping.timeshift.title}}", input)
-      
+
       // Interaction
       content.createInteraction()
 
@@ -1763,17 +1763,17 @@ function openPopUp(dataType, element) {
       var input = content.createInput("button", "cancel", "{{.button.cancel}}")
       input.setAttribute("onclick", 'javascript: showElement("popup", false);')
       content.addInteraction(input)
-      
+
       // Finished
-      var ids:string[] = []
+      var ids: string[] = []
       ids = getAllSelectedChannels()
       if (ids.length == 0) {
         ids.push(id)
       }
-      
+
       var input = content.createInput("button", "save", "{{.button.done}}")
       input.setAttribute("onclick", 'javascript: donePopupData("' + dataType + '", "' + ids + '", "false");')
-      content.addInteraction(input) 
+      content.addInteraction(input)
       break
 
     default:
@@ -1788,7 +1788,7 @@ function openPopUp(dataType, element) {
 
 
 class TVLogosFile {
-  File:string
+  File: string
 
   /**
    * @param currentLogoUrl Current channel logo to set initial value to.
@@ -1822,18 +1822,18 @@ class TVLogosFile {
     option.innerText = 'Default non-custom logo';
     datalist.appendChild(option);
 
-    const logos: Object = SERVER['tvlogos']['files']
+    const logos = SERVER['tvlogos']
 
     if (logos) {
-      const folders = getOwnObjProps(logos);
-        folders.forEach((folder) => {
-          logos[folder].forEach((logo: string) => {
-            const option = document.createElement('option')
-            option.setAttribute('value', 'https://raw.githubusercontent.com/Tapiosinn/tv-logos/master' + folder.replace('/Tapiosinn/tv-logos/tree/master', '') + '/' + logo)
-            option.innerText = logo
-            datalist.appendChild(option)
-          });
+
+      logos.forEach((logo) => {
+        const option = document.createElement('option')
+        option.setAttribute('value', logo["url"])
+        option.innerText = logo["filename"]
+        datalist.appendChild(option)
       });
+
+
     }
 
     container.appendChild(datalist)
@@ -1845,12 +1845,12 @@ class TVLogosFile {
 }
 
 class XMLTVFile {
-  File:string
+  File: string
 
-  getFiles(set:string):any {
-    let fileIDs:string[] = getOwnObjProps(SERVER["xepg"]["xmltvMap"])
+  getFiles(set: string): any {
+    let fileIDs: string[] = getOwnObjProps(SERVER["xepg"]["xmltvMap"])
     let values = new Array("-");
-    let text  = new Array("-");
+    let text = new Array("-");
 
     for (let i = 0; i < fileIDs.length; i++) {
       if (fileIDs[i] != "xTeVe Dummy") {
@@ -1871,7 +1871,7 @@ class XMLTVFile {
       select.appendChild(option)
     }
 
-    if(set != "") {
+    if (set != "") {
       (select as HTMLSelectElement).value = set
     }
 
@@ -1949,13 +1949,13 @@ class XMLTVFile {
   return: any
 }
 
-function getValueFromProviderFile(file:string, fileType, key) {
+function getValueFromProviderFile(file: string, fileType, key) {
 
   if (file == "xTeVe Dummy") {
     return file
   }
 
-  let fileID:string
+  let fileID: string
   let indicator = file.charAt(0)
 
   switch (indicator) {
@@ -1973,7 +1973,7 @@ function getValueFromProviderFile(file:string, fileType, key) {
       fileType = "xmltv"
       fileID = file.substring(0, file.lastIndexOf('.'))
       break;
-    
+
   }
 
   if (SERVER["settings"]["files"][fileType].hasOwnProperty(fileID) == true) {
@@ -2022,7 +2022,7 @@ function checkXmltvChannel(epgMapId: string, newXmlTvId: string, xmlTvFile: stri
   channelActiveCb.checked = channelActive;
   channelActiveCb.className = 'changed';
 
-  if(xmlTvFile != 'xTeVe Dummy' && channelActive == true) {
+  if (xmlTvFile != 'xTeVe Dummy' && channelActive == true) {
     changeChannelLogo(epgMapId);
     return;
   }
@@ -2075,25 +2075,25 @@ function previewChannelLogo(url: string) {
   let img = document.createElement("IMG")
   img.setAttribute('src', url)
   img.setAttribute('style', "max-height:98px; max-width:100px;")
-  img.setAttribute('onerror' , "javascript: this.onerror=null;this.src=''")
+  img.setAttribute('onerror', "javascript: this.onerror=null;this.src=''")
 
   div.appendChild(img)
 
 }
 
 function savePopupData(dataType: string, id: string, remove: Boolean, option: number) {
-  
+
   if (dataType == "mapping") {
-    
+
     let data = {}
     let cmd = "saveEpgMapping"
     data["epgMapping"] = SERVER["xepg"]["epgMapping"]
- 
-    let server:Server = new Server(cmd)
+
+    let server: Server = new Server(cmd)
     server.request(data)
 
     delete UNDO["epgMapping"]
-    
+
     return
   }
 
@@ -2107,15 +2107,15 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
 
   for (let i = 0; i < selects.length; i++) {
 
-    var name:string
+    var name: string
     name = (selects[i] as HTMLSelectElement).name
     var value = (selects[i] as HTMLSelectElement).value
-    
+
     switch (name) {
       case "tuner":
         input[name] = parseInt(value)
         break;
-      
+
       default:
         input[name] = value
         break;
@@ -2124,10 +2124,10 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
   }
 
   for (let i = 0; i < inputs.length; i++) {
-    
+
     switch ((inputs[i] as HTMLInputElement).type) {
 
-      case "checkbox": 
+      case "checkbox":
         name = (inputs[i] as HTMLInputElement).name
         input[name] = (inputs[i] as HTMLInputElement).checked
         break
@@ -2135,14 +2135,14 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
       case "text":
       case "hidden":
       case "password":
-        
+
         name = (inputs[i] as HTMLInputElement).name
 
         switch (name) {
           case "tuner":
             input[name] = parseInt((inputs[i] as HTMLInputElement).value)
             break;
-          
+
           default:
             input[name] = (inputs[i] as HTMLInputElement).value
             break;
@@ -2151,12 +2151,12 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
         break
 
     }
-    
+
   }
 
   let data = {}
 
-  let cmd:string
+  let cmd: string
 
   if (remove == true) {
     input["delete"] = true
@@ -2183,7 +2183,7 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
       confirmMsg = "Delete this playlist?"
       switch (option) {
         // Popup: Save
-        case 0: 
+        case 0:
           cmd = "saveFilesM3U"
           break
 
@@ -2197,7 +2197,7 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
       data["files"] = {}
       data["files"][dataType] = {}
       data["files"][dataType][id] = input
-      
+
       break
 
     case "hdhr":
@@ -2205,7 +2205,7 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
       confirmMsg = "Delete this HDHomeRun tuner?"
       switch (option) {
         // Popup: Save
-        case 0: 
+        case 0:
           cmd = "saveFilesHDHR"
           break
 
@@ -2219,7 +2219,7 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
       data["files"] = {}
       data["files"][dataType] = {}
       data["files"][dataType][id] = input
-      
+
       break
 
     case "xmltv":
@@ -2227,7 +2227,7 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
       confirmMsg = "Delete this XMLTV file?"
       switch (option) {
         // Popup: Save
-        case 0: 
+        case 0:
           cmd = "saveFilesXMLTV"
           break
 
@@ -2241,7 +2241,7 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
       data["files"] = {}
       data["files"][dataType] = {}
       data["files"][dataType][id] = input
-      
+
       break
 
     case "filter":
@@ -2258,7 +2258,7 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
   }
 
   if (remove == true) {
-    
+
     if (!confirm(confirmMsg)) {
       showElement("popup", false)
       return
@@ -2266,14 +2266,14 @@ function savePopupData(dataType: string, id: string, remove: Boolean, option: nu
 
   }
 
-  let server:Server = new Server(cmd)
+  let server: Server = new Server(cmd)
   server.request(data)
 
 }
 
-function donePopupData(dataType:string, idsStr:string) {
+function donePopupData(dataType: string, idsStr: string) {
 
-  let ids:string[] = idsStr.split(',');
+  let ids: string[] = idsStr.split(',');
   let div = document.getElementById("popup-custom")
   let inputs = div.getElementsByClassName("changed")
 
@@ -2283,27 +2283,27 @@ function donePopupData(dataType:string, idsStr:string) {
 
     for (let i = 0; i < inputs.length; i++) {
 
-      let name:string
-      let value:any
+      let name: string
+      let value: any
 
       switch (inputs[i].tagName) {
-        
+
         case "INPUT":
           switch ((inputs[i] as HTMLInputElement).type) {
-            case "checkbox": 
+            case "checkbox":
               name = (inputs[i] as HTMLInputElement).name
               value = (inputs[i] as HTMLInputElement).checked
               input[name] = value
               break
-    
-            case "text": 
+
+            case "text":
               name = (inputs[i] as HTMLInputElement).name
               value = (inputs[i] as HTMLInputElement).value
               input[name] = value
-            break
-      
-          }            
-      
+              break
+
+          }
+
           break
 
         case "SELECT":
@@ -2313,9 +2313,9 @@ function donePopupData(dataType:string, idsStr:string) {
           break
 
       }
-        
+
       switch (name) {
-        
+
 
         case "tvg-logo":
           //(document.getElementById(id).childNodes[2].firstChild as HTMLElement).setAttribute("src", value)
@@ -2355,15 +2355,15 @@ function donePopupData(dataType:string, idsStr:string) {
           }
 
           (document.getElementById(id).childNodes[8].firstChild as HTMLElement).innerHTML = value
-   
+
           break
 
         case "x-timeshift":
           (document.getElementById(id).childNodes[9].firstChild as HTMLElement).innerHTML = value
           break
 
-        default: 
-        
+        default:
+
       }
 
       createSearchObj()
@@ -2378,7 +2378,7 @@ function donePopupData(dataType:string, idsStr:string) {
     }
 
     (document.getElementById(id).childNodes[2].firstChild as HTMLElement).setAttribute("src", input["tvg-logo"])
-    
+
 
   });
 
@@ -2387,24 +2387,24 @@ function donePopupData(dataType:string, idsStr:string) {
   return
 }
 
-function showPreview(element:boolean) {
+function showPreview(element: boolean) {
 
   let div = document.getElementById("myStreamsBox")
   switch (element) {
-  
+
     case false:
       div.className = "notVisible"
       return
   }
 
-  let streams:string[] = ["activeStreams", "inactiveStreams"]
-   
+  let streams: string[] = ["activeStreams", "inactiveStreams"]
+
   streams.forEach(preview => {
 
     let table = document.getElementById(preview)
     table.innerHTML = ""
-    let obj:string[] = SERVER["data"]["StreamPreviewUI"][preview]
-    
+    let obj: string[] = SERVER["data"]["StreamPreviewUI"][preview]
+
     obj.forEach(channel => {
 
       let tr = document.createElement("TR")
@@ -2418,7 +2418,7 @@ function showPreview(element:boolean) {
         case "activeStreams":
           tdKey.innerText = "Channel: (+)"
           break;
-      
+
         case "inactiveStreams":
           tdKey.innerText = "Channel: (-)"
           break;
@@ -2427,7 +2427,7 @@ function showPreview(element:boolean) {
       tdVal.innerText = channel
       tr.appendChild(tdKey)
       tr.appendChild(tdVal)
-      
+
       table.appendChild(tr)
 
     });

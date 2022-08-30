@@ -502,13 +502,11 @@ func WS(w http.ResponseWriter, r *http.Request) {
 					showInfo("Web server:Toggling use of Tapiosinn TV Logos")
 					if Settings.EnableTapiosinnTVLogos {
 						go func() {
-							buildLogos()
-							response.Tvlogos = Data.TVLogos.Files
+							downloadLogoJSON()
+
 						}()
-					} else {
-						Data.TVLogos.Files = make(map[string]interface{})
-						response.Tvlogos = Data.TVLogos.Files
 					}
+					response.Tvlogos = Data.Logos.logoInformation
 				}
 
 				if Settings.HostIP != previousHostIP {
@@ -671,10 +669,10 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		// 	System.ConfigurationWizard = false
 		// 	response.Reload = true
 		case "updateLogos":
-			if len(Data.TVLogos.Files) > 0 {
-				response.Tvlogos = Data.TVLogos.Files
+			if len(Data.Logos.logoInformation) > 0 {
+				response.Tvlogos = Data.Logos.logoInformation
 			} else {
-				response.Tvlogos = make(map[string]interface{})
+				response.Tvlogos = make([]LogoInformation, 0)
 			}
 
 		default:
@@ -1176,10 +1174,10 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 		if Settings.EnableTapiosinnTVLogos {
 
-			var tvLogos = make(map[string]interface{})
+			var tvLogos = make([]LogoInformation, 0)
 
-			if len(Data.TVLogos.Files) > 0 {
-				tvLogos["files"] = Data.TVLogos.Files
+			if len(Data.Logos.logoInformation) > 0 {
+				tvLogos = Data.Logos.logoInformation
 			}
 
 			defaults.Tvlogos = tvLogos

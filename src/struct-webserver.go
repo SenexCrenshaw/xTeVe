@@ -126,7 +126,7 @@ type ResponseStruct struct {
 	Users               map[string]interface{} `json:"users,omitempty"`
 	Wizard              int                    `json:"wizard,omitempty"`
 	XEPG                map[string]interface{} `json:"xepg"`
-	Tvlogos             map[string]interface{} `json:"tvlogos"`
+	Tvlogos             []LogoInformation      `json:"tvlogos"`
 
 	Notification map[string]Notification `json:"notification,omitempty"`
 }
