@@ -2,6 +2,7 @@ package src
 
 import (
 	"context"
+	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -29,6 +30,7 @@ func StartWebserver() (err error) {
 	http.HandleFunc("/stream/", Stream)
 	http.HandleFunc("/xmltv/", xTeVe)
 	http.HandleFunc("/m3u/", xTeVe)
+	http.HandleFunc("/m3udownload/", xTeVe)
 	http.HandleFunc("/data/", WS)
 	http.HandleFunc("/web/", Web)
 	http.HandleFunc("/download/", Download)
@@ -279,6 +281,20 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 
 		requestType = "xml"
 
+		file = System.Folder.Data + getFilenameFromPath(path)
+
+		content, err = readStringFromFile(file)
+		if err != nil {
+			httpStatusError(w, r, 404)
+			return
+		}
+
+	}
+
+	// M3U Download File
+	if strings.Contains(path, "m3udownload/") {
+
+		requestType = "m3u"
 		file = System.Folder.Data + getFilenameFromPath(path)
 
 		content, err = readStringFromFile(file)
@@ -650,6 +666,38 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 			}
 
+		case "uploadM3U":
+			if len(request.Base64) > 0 {
+				response.M3UURL, err = uploadM3U(request.Base64, request.Filename)
+
+				if err == nil {
+
+					if err = conn.WriteJSON(response); err != nil {
+						ShowError(err, 1022)
+					} else {
+						return
+					}
+
+				}
+
+			}
+
+		case "uploadXML":
+			if len(request.Base64) > 0 {
+				response.XMLURL, err = uploadXML(request.Base64, request.Filename)
+
+				if err == nil {
+
+					if err = conn.WriteJSON(response); err != nil {
+						ShowError(err, 1022)
+					} else {
+						return
+					}
+
+				}
+
+			}
+
 		case "saveWizard":
 			nextStep, errNew := saveWizard(request)
 
@@ -704,6 +752,48 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
+
+}
+
+func uploadM3U(input, filename string) (m3uURL string, err error) {
+
+	b64data := input[strings.IndexByte(input, ',')+1:]
+
+	// Convert Base64 into bytes and save
+	sDec, err := b64.StdEncoding.DecodeString(b64data)
+	if err != nil {
+		return
+	}
+
+	err = writeByteToFile(System.File.M3UUploaded, sDec)
+	if err != nil {
+		return
+	}
+
+	m3uURL = System.ServerProtocol.M3U + "://" + System.Domain + "/m3udownload/xteve_uploaded.m3u"
+
+	return
+
+}
+
+func uploadXML(input, filename string) (xmlURL string, err error) {
+
+	b64data := input[strings.IndexByte(input, ',')+1:]
+
+	// Convert Base64 into bytes and save
+	sDec, err := b64.StdEncoding.DecodeString(b64data)
+	if err != nil {
+		return
+	}
+
+	err = writeByteToFile(System.File.XMLUploaded, sDec)
+	if err != nil {
+		return
+	}
+
+	xmlURL = System.ServerProtocol.M3U + "://" + System.Domain + "/xmltv/xteve_uploaded.xml"
+
+	return
 
 }
 

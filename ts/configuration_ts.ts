@@ -1,7 +1,7 @@
 class WizardCategory {
   DocumentID = "content"
 
-  createCategoryHeadline(value:string):any {
+  createCategoryHeadline(value: string): any {
     var element = document.createElement("H4")
     element.innerHTML = value
     return element
@@ -9,20 +9,20 @@ class WizardCategory {
 }
 
 class WizardItem extends WizardCategory {
-  key:string
-  headline:string
+  key: string
+  headline: string
 
-  constructor(key:string, headline:string) {
+  constructor(key: string, headline: string) {
     super()
     this.headline = headline
     this.key = key
   }
 
-  createWizard():void {
+  createWizard(): void {
     var headline = this.createCategoryHeadline(this.headline)
     var key = this.key
-    var content:PopupContent = new PopupContent()
-    var description:string
+    var content: PopupContent = new PopupContent()
+    var description: string
 
     var doc = document.getElementById(this.DocumentID)
     doc.innerHTML = ""
@@ -46,10 +46,10 @@ class WizardItem extends WizardCategory {
         description = "{{.wizard.tuner.description}}"
 
         break;
-      
+
       case "epgSource":
-        var text:any[] = ["PMS", "XEPG"]
-        var values:any[] = ["PMS", "XEPG"]
+        var text: any[] = ["PMS", "XEPG"]
+        var values: any[] = ["PMS", "XEPG"]
 
         var select = content.createSelect(text, values, "XEPG", key)
         select.setAttribute("class", "wizard")
@@ -67,6 +67,10 @@ class WizardItem extends WizardCategory {
         input.id = key
         doc.appendChild(input)
 
+        var fileinput = content.createInput("button", "cancel", "{{.button.uploadM3U}}")
+        fileinput.setAttribute("onclick", 'javascript: uploadM3U();')
+        doc.appendChild(fileinput)
+
         description = "{{.wizard.m3u.description}}"
 
         break
@@ -78,9 +82,13 @@ class WizardItem extends WizardCategory {
         input.id = key
         doc.appendChild(input)
 
+        var fileinput = content.createInput("button", "cancel", "{{.button.uploadXML}}")
+        fileinput.setAttribute("onclick", 'javascript: uploadXML();')
+        doc.appendChild(fileinput)
+
         description = "{{.wizard.xmltv.description}}"
 
-      break
+        break
 
       default:
         break;
@@ -95,9 +103,9 @@ class WizardItem extends WizardCategory {
 }
 
 
-function readyForConfiguration(wizard:number) {
+function readyForConfiguration(wizard: number) {
 
-  var server:Server = new Server("getServerConfig")
+  var server: Server = new Server("getServerConfig")
   server.request(new Object())
 
   showElement("loading", false)
@@ -116,16 +124,16 @@ function saveWizard() {
 
   for (var i = 0; i < config.length; i++) {
 
-    var name:string
-    var value:any
-    
+    var name: string
+    var value: any
+
     switch (config[i].tagName) {
       case "SELECT":
         name = (config[i] as HTMLSelectElement).name
         value = (config[i] as HTMLSelectElement).value
 
         // If the value is a number, store it as a number
-        if(isNaN(value)){
+        if (isNaN(value)) {
           wizard[name] = value
         } else {
           wizard[name] = parseInt(value)
@@ -149,7 +157,7 @@ function saveWizard() {
             break
         }
         break
-      
+
       default:
         // code...
         break;
@@ -160,7 +168,7 @@ function saveWizard() {
   var data = new Object()
   data["wizard"] = wizard
 
-  var server:Server = new Server(cmd)
+  var server: Server = new Server(cmd)
   server.request(data)
 
 }

@@ -6,8 +6,7 @@
 			"type": "shell",
 			"command": "./update_version.sh",
 			"presentation": {
-				"reveal": "always",
-				"panel": "new"
+				"revealProblems": "onProblem"
 			}
 		},
 		{
@@ -17,6 +16,7 @@
 				"$tsc"
 			],
 			"group": {
+				"revealProblems": "onProblem",
 				"kind": "build",
 				"isDefault": true
 			},
@@ -27,8 +27,7 @@
 			"type": "shell",
 			"command": "cd ts && bash build_webUI.sh",
 			"presentation": {
-				"reveal": "always",
-				"panel": "new"
+				"revealProblems": "onProblem"
 			},
 			"dependsOn": [
 				"Update Version",

@@ -117,6 +117,8 @@ type ResponseStruct struct {
 	IPAddressesV4Host   []string               `json:"ipAddressesV4Host"` // Every IPv4 address to display in web client
 	Log                 WebScreenLogStruct     `json:"log"`
 	LogoURL             string                 `json:"logoURL,omitempty"`
+	M3UURL              string                 `json:"m3uURL,omitempty"`
+	XMLURL              string                 `json:"xmlURL,omitempty"`
 	OpenLink            string                 `json:"openLink,omitempty"`
 	OpenMenu            string                 `json:"openMenu,omitempty"`
 	Reload              bool                   `json:"reload,omitempty"`

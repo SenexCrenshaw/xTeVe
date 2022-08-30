@@ -581,6 +581,96 @@ function restore() {
   return
 }
 
+
+function uploadM3U() {
+  var upload = document.createElement("INPUT")
+  upload.setAttribute("type", "file")
+  upload.setAttribute("class", "notVisible")
+  upload.setAttribute("name", "")
+  upload.id = "upload"
+
+  document.body.appendChild(upload)
+  upload.click()
+
+  upload.onblur = function () {
+    alert()
+  }
+
+  upload.onchange = function () {
+    var input = this as HTMLInputElement
+    var filename = (upload as HTMLInputElement).files[0].name
+
+    var reader = new FileReader()
+    var file = input.files[0]
+
+    if (file) {
+
+      reader.readAsDataURL(file)
+      reader.onload = function () {
+        var data = {}
+        var cmd = "uploadM3U"
+        data["base64"] = reader.result
+        data["filename"] = file.name
+
+        var server: Server = new Server(cmd)
+        server.request(data)
+      }
+
+    } else {
+      alert("File could not be loaded")
+    }
+
+    upload.remove()
+    return
+  }
+
+}
+
+function uploadXML() {
+  var upload = document.createElement("INPUT")
+  upload.setAttribute("type", "file")
+  upload.setAttribute("class", "notVisible")
+  upload.setAttribute("name", "")
+  upload.id = "upload"
+
+  document.body.appendChild(upload)
+  upload.click()
+
+  upload.onblur = function () {
+    alert()
+  }
+
+  upload.onchange = function () {
+    var input = this as HTMLInputElement
+    var filename = (upload as HTMLInputElement).files[0].name
+
+    var reader = new FileReader()
+    var file = input.files[0]
+
+    if (file) {
+
+      reader.readAsDataURL(file)
+      reader.onload = function () {
+        var data = {}
+        var cmd = "uploadXML"
+        data["base64"] = reader.result
+        data["filename"] = file.name
+
+        var server: Server = new Server(cmd)
+        server.request(data)
+      }
+
+    } else {
+      alert("File could not be loaded")
+    }
+
+    upload.remove()
+    return
+  }
+
+}
+
+
 function uploadLogo() {
 
   if (document.getElementById('upload')) {
@@ -668,4 +758,4 @@ function checkLogos() {
     var server: Server = new Server("updateLogos")
     server.request(new Object())
   }
- }
+}

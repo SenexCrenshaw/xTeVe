@@ -101,7 +101,9 @@ func Init() (err error) {
 	System.File.ServerCert = getPlatformFile(fmt.Sprintf("%sxteve.crt", System.Folder.Certificates))
 	System.File.ServerCertPrivKey = getPlatformFile(fmt.Sprintf("%sxteve.key", System.Folder.Certificates))
 	System.File.XML = getPlatformFile(fmt.Sprintf("%s%s.xml", System.Folder.Data, System.AppName))
+	System.File.XMLUploaded = getPlatformFile(fmt.Sprintf("%s%s_uploaded.xml", System.Folder.Data, System.AppName))
 	System.File.M3U = getPlatformFile(fmt.Sprintf("%s%s.m3u", System.Folder.Data, System.AppName))
+	System.File.M3UUploaded = getPlatformFile(fmt.Sprintf("%s%s_uploaded.m3u", System.Folder.Data, System.AppName))
 
 	System.Compressed.GZxml = getPlatformFile(fmt.Sprintf("%s%s.xml.gz", System.Folder.Data, System.AppName))
 
