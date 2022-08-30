@@ -1841,6 +1841,43 @@ class TVLogosFile {
     return [container, input, datalist]
   }
 
+  newTvLogosCountryPicker(currentCountry: string): [HTMLDivElement, HTMLInputElement, HTMLDataListElement] {
+    const container = document.createElement('div')
+    const input = document.createElement('input')
+    input.setAttribute('type', 'text')
+
+    input.value = (currentCountry) ? currentCountry : ''
+
+    container.appendChild(input);
+
+    const datalist = document.createElement('datalist')
+    const logos = SERVER['tvlogos']
+
+    let countries: (string | undefined)[] = [];
+
+
+    if (logos) {
+
+      logos.forEach((logo) => {
+        if (countries === undefined || countries.indexOf(logo["country"]) === -1) {
+          countries.push(logo["country"])
+        }
+      });
+      countries.sort();
+
+      countries.forEach((country) => {
+        const option = document.createElement('option')
+        option.setAttribute('value', country)
+        option.innerText = country
+        datalist.appendChild(option)
+      });
+    }
+
+    container.appendChild(datalist)
+
+    return [container, input, datalist]
+  }
+
   return: any
 }
 

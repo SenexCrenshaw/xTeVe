@@ -299,6 +299,7 @@ type SettingsStruct struct {
 	DefaultMissingEPG      string   `json:"defaultMissingEPG"`
 	DisallowURLDuplicates  bool     `json:"disallowURLDuplicates"`
 	EnableTapiosinnTVLogos bool     `json:"enableTapiosinnTVLogos"`
+	LogosCountry           string   `json:"logosCountry"`
 	EnableMappedChannels   bool     `json:"enableMappedChannels"`
 	EpgSource              string   `json:"epgSource"`
 	FFmpegOptions          string   `json:"ffmpeg.options"`

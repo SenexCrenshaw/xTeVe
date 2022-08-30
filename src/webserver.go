@@ -491,6 +491,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			var authenticationUpdate = Settings.AuthenticationWEB
 			var previousTLSMode = Settings.TLSMode
 			var previousTvLogos = Settings.EnableTapiosinnTVLogos
+			var previousLogosCountry = Settings.LogosCountry
 			var previousHostIP = Settings.HostIP
 			var previousHostName = Settings.HostName
 			var previousStoreBufferInRAM = Settings.StoreBufferInRAM
@@ -513,8 +514,8 @@ func WS(w http.ResponseWriter, r *http.Request) {
 					response.OpenLink = System.URLBase + "/web/"
 					restartWebserver <- true
 				}
-
-				if Settings.EnableTapiosinnTVLogos != previousTvLogos {
+				//FIXME
+				if Settings.EnableTapiosinnTVLogos != previousTvLogos || (Settings.EnableTapiosinnTVLogos && previousLogosCountry != Settings.LogosCountry) {
 					showInfo("Web server:Toggling use of Tapiosinn TV Logos")
 					if Settings.EnableTapiosinnTVLogos {
 						go func() {
@@ -1262,6 +1263,7 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 		}
 
+		//FIXME
 		if Settings.EnableTapiosinnTVLogos {
 
 			var tvLogos = make([]LogoInformation, 0)

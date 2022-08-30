@@ -38,8 +38,6 @@ func downloadLogoJSON() {
 	info, err := os.Stat(System.File.TVLogos)
 	logoJsonExists := err == nil
 
-	//var logoInformation []LogoInformation
-
 	if logoJsonExists && time.Now().Before(info.ModTime().Add(time.Hour*168)) {
 		content, err := ioutil.ReadFile(System.File.TVLogos)
 		if err != nil {

@@ -385,6 +385,10 @@
       "title": "Enable ability to find station logos",
       "description": "Adds the ability to find station logos from Tapiosinn's tv-logos Github repository, first run may take upwards of ~30 seconds to fetch data. See <a href='https://github.com/Tapiosinn/tv-logos/' target='_blank'>https://github.com/Tapiosinn/tv-logos/</a>"
     },
+    "logosCountry": {
+      "title": "Filter Tapiosinn logos by country",
+      "description": ""
+    },
     "filesUpdate": {
       "title": "Updates all files at startup",
       "description": "Updates all playlists, tuner and XMLTV files at startup."

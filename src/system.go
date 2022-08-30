@@ -123,6 +123,7 @@ func loadSettings() (settings SettingsStruct, err error) {
 	defaults["defaultMissingEPG"] = "-"
 	defaults["disallowURLDuplicates"] = false
 	defaults["enableTapiosinnTVLogos"] = true
+	defaults["LogosCountry"] = ""
 	defaults["enableMappedChannels"] = false
 	defaults["epgSource"] = "PMS"
 	defaults["ffmpeg.options"] = System.FFmpeg.DefaultOptions

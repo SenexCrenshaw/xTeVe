@@ -34,6 +34,7 @@ type RequestStruct struct {
 		DisallowURLDuplicates    *bool     `json:"disallowURLDuplicates,omitempty"`
 		EnableMappedChannels     *bool     `json:"enableMappedChannels,omitempty"`
 		EnableTapiosinnTVLogos   *bool     `json:"enableTapiosinnTVLogos,omitempty"`
+		LogosCountry             string    `json:"logosCountry,omitempty"`
 		EpgSource                *string   `json:"epgSource,omitempty"`
 		FFmpegOptions            *string   `json:"ffmpeg.options,omitempty"`
 		FFmpegPath               *string   `json:"ffmpeg.path,omitempty"`
