@@ -183,15 +183,14 @@ class SettingsCategory {
         tdLeft.innerHTML = "{{.settings.logosCountry.title}}" + ":"
 
         var tdRight = document.createElement("TD")
-
-        logoContainer.setAttribute('id', 'station-logo-picker-container')
-        logoInput.setAttribute('list', 'station-logo-picker-datalist')
+        logoContainer.setAttribute('id', 'station-country-picker-container')
+        logoInput.setAttribute('list', 'station-country-picker-datalist')
         logoInput.setAttribute('name', 'LogosCountry')
-        logoInput.setAttribute('id', 'station-logo-picker-input')
+        logoInput.setAttribute('id', 'station-country-picker-input')
 
         logoInput.setAttribute("onchange", "javascript: this.className = 'changed'")
 
-        logoDatalist.setAttribute('id', 'station-logo-picker-datalist')
+        logoDatalist.setAttribute('id', 'station-country-picker-datalist')
 
         tdRight.appendChild(logoContainer)
 

@@ -1,6 +1,6 @@
 class Log {
 
-  createLog(entry:string):any {
+  createLog(entry: string): any {
 
     var element = document.createElement("PRE");
     entry = String(entry);
@@ -24,7 +24,7 @@ class Log {
 
 }
 
-function showLogs(bottom:boolean) {
+function showLogs(bottom: boolean) {
 
   var log = new Log()
 
@@ -40,13 +40,13 @@ function showLogs(bottom:boolean) {
     var entry = log.createLog(logs[logID])
 
     div.append(entry)
-  
+
   });
 
-  setTimeout(function(){ 
+  setTimeout(function () {
 
     if (bottom == true) {
-  
+
       var wrapper = document.getElementById("box-wrapper");
       wrapper.scrollTop = wrapper.scrollHeight;
 
@@ -56,11 +56,60 @@ function showLogs(bottom:boolean) {
 
 }
 
+function showInfo(logMsg: string) {
+
+  var cmd = "showInfo"
+
+  var data = {}
+  data["logMsg"] = logMsg
+
+  var server: Server = new Server(cmd)
+  server.request(data)
+
+}
+
+function showError(logMsg: string) {
+
+  var cmd = "showError"
+
+  var data = {}
+  data["logMsg"] = logMsg
+
+  var server: Server = new Server(cmd)
+  server.request(data)
+
+}
+
+function showDebug(logMsg: string, logLevel: number) {
+
+  var cmd = "showDebug"
+
+  var data = {}
+  data["logMsg"] = logMsg
+  data["logLevel"] = logLevel
+
+  var server: Server = new Server(cmd)
+  server.request(data)
+
+}
+
+function showWarning(logMsg: string) {
+
+  var cmd = "showWarning"
+
+  var data = {}
+  data["logMsg"] = logMsg
+
+  var server: Server = new Server(cmd)
+  server.request(data)
+
+}
+
 function resetLogs() {
 
   var cmd = "resetLogs"
   var data = new Object()
-  var server:Server = new Server(cmd)
+  var server: Server = new Server(cmd)
   server.request(data)
 
 }

@@ -8,12 +8,6 @@ class Server {
 
   request(data: Object): any {
 
-    if (SERVER_CONNECTION == true) {
-      return
-    }
-
-    SERVER_CONNECTION = true
-
     if (this.cmd != "updateLog") {
       showElement("loading", true)
       UNDO = new Object()
@@ -42,7 +36,6 @@ class Server {
     ws.onerror = function (wsErrEvt) {
 
       console.log("No websocket connection to xTeVe could be established. Check your network configuration.")
-      SERVER_CONNECTION = false
 
       if (WS_AVAILABLE == false) {
         alert("No websocket connection to xTeVe could be established. Check your network configuration.")
@@ -53,7 +46,6 @@ class Server {
 
     ws.onmessage = function (wsMessageEvt) {
 
-      SERVER_CONNECTION = false
       showElement("loading", false)
 
       const response: Object = JSON.parse(wsMessageEvt.data);
@@ -104,6 +96,15 @@ class Server {
           if (document.getElementById("content_log")) {
             showLogs(false)
           }
+          return
+
+        case "showInfo":
+          return
+        case "showDebug":
+          return
+        case "showError":
+          return
+        case "showWarning":
           return
 
         default:

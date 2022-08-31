@@ -3,7 +3,7 @@ var BULK_EDIT: Boolean = false
 var COLUMN_TO_SORT: number
 var SEARCH_MAPPING = {}
 var UNDO = {}
-var SERVER_CONNECTION = false
+//var SERVER_CONNECTION = false
 var WS_AVAILABLE = false
 var LOGO_UPDATE_INTERVAL: number
 
@@ -642,7 +642,6 @@ function uploadXML() {
 
   upload.onchange = function () {
     var input = this as HTMLInputElement
-    var filename = (upload as HTMLInputElement).files[0].name
 
     var reader = new FileReader()
     var file = input.files[0]
@@ -749,6 +748,16 @@ function updateLog() {
   var server: Server = new Server("updateLog")
   server.request(new Object())
 
+}
+
+function ImageExist(url: string) {
+  var img = new Image();
+  img.src = url;
+  return img.height != 0;
+}
+
+function getDefaultLogo() {
+  return (SERVER['settings']['tlsMode']) ? 'https://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png' : 'http://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png';
 }
 
 function checkLogos() {

@@ -424,6 +424,7 @@ class Content {
           var cell: Cell = new Cell()
           cell.child = true
           cell.childType = "IMG"
+          cell.value = data[key]["x-name"]
           cell.imageURL = data[key]["tvg-logo"]
           var td = cell.createCell()
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
@@ -588,11 +589,16 @@ class Cell {
 
         case "IMG":
           element = document.createElement(this.childType);
-          element.setAttribute("src", this.imageURL)
-          if (this.imageURL != "") {
-            element.setAttribute("onerror", "javascript: this.onerror=null;this.src=''")
-            //onerror="this.onerror=null;this.src='missing.gif';"
+          element.setAttribute("alt", this.value);
+          element.onerror = function () {
+            showWarning(this.alt + " has a bad logo URL")
+            this.src = getDefaultLogo()
+            this.onerror = null
+          };
+          if (this.imageURL === "") {
+            this.imageURL = getDefaultLogo()
           }
+          element.setAttribute("src", this.imageURL)
       }
 
       td.appendChild(element)
@@ -702,7 +708,7 @@ class ShowContent extends Content {
         input.setAttribute("title", "{{.checkbox.shiftChannel.title}}")
         interaction.appendChild(input)
 
-        let label = document.createElement("label")
+        var label = document.createElement("label")
         label.setAttribute("for", "shiftChannel")
         label.setAttribute("class", "shiftChannelLabel")
         label.innerHTML = "{{.checkbox.shiftChannel.label}}"
@@ -1182,6 +1188,11 @@ function openPopUp(dataType, element) {
       input.setAttribute("placeholder", "{{.playlist.fileM3U.placeholder}}")
       content.appendRow("{{.playlist.fileM3U.title}}", input)
 
+      var m3uinput = content.createInput("button", "cancel", "{{.button.uploadM3U}}")
+      m3uinput.setAttribute("onclick", 'javascript: uploadM3U();')
+      content.appendRow("{{.playlist.fileM3U.title}}", m3uinput)
+
+
       // Tuner
       if (SERVER["settings"]["buffer"] != "-") {
         var text: string[] = []
@@ -1493,6 +1504,10 @@ function openPopUp(dataType, element) {
       input.setAttribute("placeholder", "{{.xmltv.fileXMLTV.placeholder}}")
       content.appendRow("{{.xmltv.fileXMLTV.title}}", input)
 
+      var xmlinput = content.createInput("button", "cancel", "{{.button.uploadXML}}")
+      xmlinput.setAttribute("onclick", 'javascript: uploadXML();')
+      content.appendRow("{{.xmltv.fileXMLTV.title}}", xmlinput)
+
       // Interaction
       content.createInteraction()
       // Delete
@@ -1664,9 +1679,10 @@ function openPopUp(dataType, element) {
         logoInput.setAttribute('list', 'station-logo-picker-datalist')
         logoInput.setAttribute('name', 'tvg-logo')
         logoInput.setAttribute('id', 'station-logo-picker-input')
-        logoInput.setAttribute('onchange', `javascript: this.className = 'changed'; previewChannelLogo(this.value)`)
+        logoInput.setAttribute('onchange', `javascript: this.className = 'changed'; this.value=SERVER['tvlogos']["url"]+this.value; previewChannelLogo(this.value)`)
         logoDatalist.setAttribute('id', 'station-logo-picker-datalist')
         content.appendRow('{{.mapping.channelLogo.title}}', logoContainer);
+        content.description("{{.mapping.channelLogo.description}}")
       } else {
         var dbKey: string = "tvg-logo"
         currentLogoUrl = data[dbKey]

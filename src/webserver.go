@@ -623,6 +623,18 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			WebScreenLog.Warnings = 0
 			response.OpenMenu = strconv.Itoa(lo.IndexOf(System.WEB.Menu, "log"))
 
+		case "showInfo":
+			showInfo("WEB:" + request.LogMsg)
+
+		case "showDebug":
+			showDebug("WEB:"+request.LogMsg, request.LogLevel)
+
+		case "showWarning":
+			showWarningFromWeb("WEB:" + request.LogMsg)
+
+		case "showError":
+			ShowErrorFromWeb("WEB:" + request.LogMsg)
+
 		case "xteveBackup":
 			file, errNew := xteveBackup()
 			err = errNew
@@ -1247,7 +1259,6 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 	if data {
 
 		defaults.Users, _ = authentication.GetAllUserData()
-		//defaults.DVR = System.DVRAddress
 
 		if Settings.EpgSource == "XEPG" {
 

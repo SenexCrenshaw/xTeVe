@@ -57,6 +57,10 @@ type RequestStruct struct {
 	} `json:"settings,omitempty"`
 
 	// Upload Logo
+	LogMsg   string `json:"logMsg,omitempty"`
+	LogLevel int    `json:"logLevelg,omitempty"`
+
+	// Upload Logo
 	Filename string `json:"filename,omitempty"`
 
 	// Filter

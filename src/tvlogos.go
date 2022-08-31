@@ -44,7 +44,7 @@ func downloadLogoJSON() {
 			ShowError(err, 0)
 		}
 
-		err = json.Unmarshal(content, &Data.Logos.LogoInformation)
+		err = json.Unmarshal(content, &Data.Logos)
 		if err != nil {
 			log.Fatal("Error during Unmarshal(): ", err)
 		}
@@ -99,7 +99,7 @@ func downloadLogoJSON() {
 			return Data.Logos.LogoInformation[i].FileName < Data.Logos.LogoInformation[j].FileName
 		})
 
-		file, _ := json.MarshalIndent(Data.Logos.LogoInformation, "", " ")
+		file, _ := json.MarshalIndent(Data.Logos, "", " ")
 		_ = ioutil.WriteFile(System.File.TVLogos, file, 0644)
 
 	}

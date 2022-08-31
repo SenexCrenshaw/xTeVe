@@ -52,7 +52,7 @@
   },
   "checkbox": {
     "shiftChannel": {
-      "label": "Shift channels",
+      "label": "Shift Channels",
       "title": "Shift existing channels up by 1 channel number if moving a channel to an already used channel number"
     }
   },
@@ -387,7 +387,7 @@
     },
     "logosCountry": {
       "title": "Filter Tapiosinn logos by country",
-      "description": ""
+      "description": "Type in this field to search Tapiosinn's tv-logos repository"
     },
     "filesUpdate": {
       "title": "Updates all files at startup",

@@ -1,6 +1,4 @@
 class TVLogosFile {
-    File: string;
-
     /**
      * @param currentLogoUrl Current channel logo to set initial value to.
      * @returns Array of, sequentially:
@@ -33,16 +31,19 @@ class TVLogosFile {
         option.innerText = 'Default non-custom logo';
         datalist.appendChild(option);
 
-        const logosStruct = SERVER['tvlogos'];
 
-        if (logosStruct) {
-            logosStruct["LogoInformation"].forEach((logo) => {
-                const option = document.createElement('option');
-                option.setAttribute('value', logosStruct["url"] + logo["path"]);
-                option.innerText = logo["filename"];
-                datalist.appendChild(option);
+        if (SERVER['tvlogos']) {
+            SERVER['tvlogos']["LogoInformation"].forEach((logo) => {
+                if (SERVER["settings"]["logosCountry"] === "All" ||
+                    logo["path"].startsWith("misc") ||
+                    logo["country"] === SERVER["settings"]["logosCountry"]
+                ) {
+                    const option = document.createElement('option');
+                    option.setAttribute('value', logo["path"]);
+                    option.innerText = logo["filename"];
+                    datalist.appendChild(option);
+                }
             });
-
 
         }
 
@@ -53,20 +54,22 @@ class TVLogosFile {
 
     newTvLogosCountryPicker(currentCountry: string): [HTMLDivElement, HTMLInputElement, HTMLDataListElement] {
         const container = document.createElement('div');
+
         const input = document.createElement('input');
-        input.setAttribute('type', 'text');
-
         input.value = (currentCountry) ? currentCountry : '';
-
         container.appendChild(input);
 
         const datalist = document.createElement('datalist');
-        const logosStruct = SERVER['tvlogos'];
 
-        if (logosStruct) {
+        const option = document.createElement('option');
+        option.setAttribute('value', 'All');
+        datalist.appendChild(option);
+
+        if (SERVER['tvlogos']) {
             let countries: (string | undefined)[] = [];
-            logosStruct["LogoInformation"].forEach((logo) => {
-                if (countries === undefined || countries.indexOf(logo["country"]) === -1) {
+            SERVER['tvlogos']["LogoInformation"].forEach((logo) => {
+                if (!logo["path"].startsWith("misc") &&
+                    countries.indexOf(logo["country"]) === -1) {
                     countries.push(logo["country"]);
                 }
             });
@@ -78,7 +81,6 @@ class TVLogosFile {
                 datalist.appendChild(option);
             });
         }
-
         container.appendChild(datalist);
 
         return [container, input, datalist];
