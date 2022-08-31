@@ -124,6 +124,11 @@ type GitStruct struct {
 	Version  string `json:"version"`
 }
 
+type LogosStruct struct {
+	URL             string            `json:"url"`
+	LogoInformation []LogoInformation `json:"LogoInformation"`
+}
+
 // DataStruct : All Data is stored here. (Lineup, XMLTV)
 type DataStruct struct {
 	Cache struct {
@@ -173,13 +178,7 @@ type DataStruct struct {
 		XEPGCount int64
 	}
 
-	// TVLogos struct {
-	// 	Files map[string]interface{}
-	// }
-
-	Logos struct {
-		logoInformation []LogoInformation
-	}
+	Logos LogosStruct
 }
 
 // Filter : Used for the Filter Rules

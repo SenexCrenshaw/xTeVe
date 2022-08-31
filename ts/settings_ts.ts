@@ -781,7 +781,6 @@ function showSettings() {
 }
 
 
-//FIXME
 function saveSettings() {
 
   var cmd = "saveSettings"

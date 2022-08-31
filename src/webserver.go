@@ -514,7 +514,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 					response.OpenLink = System.URLBase + "/web/"
 					restartWebserver <- true
 				}
-				//FIXME
+
 				if Settings.EnableTapiosinnTVLogos != previousTvLogos || (Settings.EnableTapiosinnTVLogos && previousLogosCountry != Settings.LogosCountry) {
 					showInfo("Web server:Toggling use of Tapiosinn TV Logos")
 					if Settings.EnableTapiosinnTVLogos {
@@ -523,7 +523,12 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 						}()
 					}
-					response.Tvlogos = Data.Logos.logoInformation
+					response.Tvlogos = Data.Logos
+				} else {
+					response.Tvlogos = LogosStruct{
+						URL:             "",
+						LogoInformation: []LogoInformation{},
+					}
 				}
 
 				if Settings.HostIP != previousHostIP {
@@ -718,10 +723,13 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		// 	System.ConfigurationWizard = false
 		// 	response.Reload = true
 		case "updateLogos":
-			if len(Data.Logos.logoInformation) > 0 {
-				response.Tvlogos = Data.Logos.logoInformation
+			if len(Data.Logos.LogoInformation) > 0 {
+				response.Tvlogos = Data.Logos
 			} else {
-				response.Tvlogos = make([]LogoInformation, 0)
+				response.Tvlogos = LogosStruct{
+					URL:             "",
+					LogoInformation: []LogoInformation{},
+				}
 			}
 
 		default:
@@ -1263,17 +1271,21 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 		}
 
-		//FIXME
 		if Settings.EnableTapiosinnTVLogos {
 
-			var tvLogos = make([]LogoInformation, 0)
+			var tvLogos LogosStruct
 
-			if len(Data.Logos.logoInformation) > 0 {
-				tvLogos = Data.Logos.logoInformation
+			if len(Data.Logos.LogoInformation) > 0 {
+				tvLogos = Data.Logos
 			}
 
 			defaults.Tvlogos = tvLogos
 
+		} else {
+			defaults.Tvlogos = LogosStruct{
+				URL:             "",
+				LogoInformation: []LogoInformation{},
+			}
 		}
 
 		defaults.Settings = Settings

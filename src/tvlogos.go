@@ -29,7 +29,7 @@ type TVLogoInformation struct {
 
 type LogoInformation struct {
 	Country  string `json:"country"`
-	URL      string `json:"url"`
+	Path     string `json:"path"`
 	FileName string `json:"filename"`
 }
 
@@ -44,12 +44,14 @@ func downloadLogoJSON() {
 			ShowError(err, 0)
 		}
 
-		err = json.Unmarshal(content, &Data.Logos.logoInformation)
+		err = json.Unmarshal(content, &Data.Logos.LogoInformation)
 		if err != nil {
 			log.Fatal("Error during Unmarshal(): ", err)
 		}
 
 	} else {
+		Data.Logos.URL = "https://raw.githubusercontent.com/Tapiosinn/tv-logos/master/"
+
 		providerURL := "https://api.github.com/repos/Tapiosinn/tv-logos/git/trees/master?recursive=1"
 
 		resp, err := http.Get(providerURL)
@@ -69,9 +71,7 @@ func downloadLogoJSON() {
 			return
 		}
 
-		rcountry := regexp.MustCompile(`countries\/(?P<country>.*)\/(?P<filename>.*[png|jpg])$`)
-		rcmisc := regexp.MustCompile(`misc\/(?P<country>.*)\/(?P<filename>.*[png|jpg])$`)
-		rcmisc2 := regexp.MustCompile(`misc\/(.*[png|jpg])$`)
+		rcountry := regexp.MustCompile(`^(countries|misc)\/(?P<country>[a-zA-Z0-9-]+)\/(.*\/)?(?P<filename>.*[png|jpg])$`)
 
 		var match [][]string
 
@@ -79,36 +79,27 @@ func downloadLogoJSON() {
 			if !strings.HasSuffix(v.Path, "png") {
 				continue
 			}
-			fmt.Printf("%s\n", v.Path)
-			if strings.HasPrefix(v.Path, "countries") {
-				match = rcountry.FindAllStringSubmatch(v.Path, -1)
-				if match == nil {
-					fmt.Printf("BAD match %s\n", v.Path)
-					continue
-				}
-			} else {
-				match = rcmisc.FindAllStringSubmatch(v.Path, -1)
-				if match == nil {
-					match = rcmisc2.FindAllStringSubmatch(v.Path, -1)
-					if match == nil {
-						fmt.Printf("BAD match %s\n", v.Path)
-						continue
-					}
-				}
+			//fmt.Printf("%s\n", v.Path)
+
+			match = rcountry.FindAllStringSubmatch(v.Path, -1)
+			if match == nil {
+				fmt.Printf("BAD match %s\n", v.Path)
+				continue
+
 			}
 
-			if match != nil && match[0] != nil && len(match[0]) != 3 {
+			if match != nil && match[0] != nil && len(match[0]) != 5 {
 				continue
 			}
 
-			Data.Logos.logoInformation = append(Data.Logos.logoInformation, LogoInformation{Country: match[0][1], URL: "https://raw.githubusercontent.com/Tapiosinn/tv-logos/master/" + v.Path, FileName: match[0][2]})
+			Data.Logos.LogoInformation = append(Data.Logos.LogoInformation, LogoInformation{Country: match[0][2], Path: v.Path, FileName: match[0][4]})
 		}
 
-		sort.Slice(Data.Logos.logoInformation, func(i, j int) bool {
-			return Data.Logos.logoInformation[i].FileName < Data.Logos.logoInformation[j].FileName
+		sort.Slice(Data.Logos.LogoInformation, func(i, j int) bool {
+			return Data.Logos.LogoInformation[i].FileName < Data.Logos.LogoInformation[j].FileName
 		})
 
-		file, _ := json.MarshalIndent(Data.Logos.logoInformation, "", " ")
+		file, _ := json.MarshalIndent(Data.Logos.LogoInformation, "", " ")
 		_ = ioutil.WriteFile(System.File.TVLogos, file, 0644)
 
 	}
