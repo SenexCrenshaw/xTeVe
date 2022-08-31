@@ -38,6 +38,13 @@ class WizardItem extends WizardCategory {
           values.push(i)
         }
 
+        var restoreinput = document.createElement("INPUT")
+        restoreinput.setAttribute("type", "button")
+        restoreinput.setAttribute("name", "Restore")
+        restoreinput.setAttribute("value", "{{.button.restore}}")
+        restoreinput.setAttribute("onclick", 'javascript: restore();')
+        doc.appendChild(restoreinput)
+
         var select = content.createSelect(text, values, "1", key)
         select.setAttribute("class", "wizard")
         select.id = key

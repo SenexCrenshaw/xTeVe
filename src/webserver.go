@@ -865,6 +865,8 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 			if len(Settings.Files.M3U) == 0 && len(Settings.Files.HDHR) == 0 {
 				System.ConfigurationWizard = true
+			} else {
+				System.ConfigurationWizard = false
 			}
 
 		}
