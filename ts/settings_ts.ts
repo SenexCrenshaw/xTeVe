@@ -1,19 +1,19 @@
 class SettingsCategory {
-  DocumentID:string = "content_settings"
-  createCategoryHeadline(value:string):any {
+  DocumentID: string = "content_settings"
+  createCategoryHeadline(value: string): any {
     var element = document.createElement("H4")
     element.innerHTML = value
     return element
   }
 
-  createHR():any {
+  createHR(): any {
     var element = document.createElement("HR")
     return element
   }
 
-  createSettings(settingsKey:string):any {
+  createSettings(settingsKey: string): any {
     var setting = document.createElement("TR")
-    var content:PopupContent = new PopupContent()
+    var content: PopupContent = new PopupContent()
     var data = SERVER["settings"][settingsKey]
 
     switch (settingsKey) {
@@ -160,16 +160,54 @@ class SettingsCategory {
         setting.appendChild(tdRight)
         break
 
-      case "disallowURLDuplicates":
+      case "enableTapiosinnTVLogos":
         var tdLeft = document.createElement("TD")
-        tdLeft.innerHTML = "{{.settings.disallowURLDuplicates.title}}" + ":"
-  
+        tdLeft.innerHTML = "{{.settings.tvLogos.title}}" + ":"
+
         var tdRight = document.createElement("TD")
         var input = content.createCheckbox(settingsKey)
         input.checked = data
         input.setAttribute("onchange", "javascript: this.className = 'changed'")
         tdRight.appendChild(input)
-  
+
+        setting.appendChild(tdLeft)
+        setting.appendChild(tdRight)
+        break
+
+
+      case "logosCountry":
+        var logos = new TVLogosFile()
+        const [logoContainer, logoInput, logoDatalist] = logos.newTvLogosCountryPicker(data)
+
+        var tdLeft = document.createElement("TD")
+        tdLeft.innerHTML = "{{.settings.logosCountry.title}}" + ":"
+
+        var tdRight = document.createElement("TD")
+        logoContainer.setAttribute('id', 'station-country-picker-container')
+        logoInput.setAttribute('list', 'station-country-picker-datalist')
+        logoInput.setAttribute('name', 'LogosCountry')
+        logoInput.setAttribute('id', 'station-country-picker-input')
+
+        logoInput.setAttribute("onchange", "javascript: this.className = 'changed'")
+
+        logoDatalist.setAttribute('id', 'station-country-picker-datalist')
+
+        tdRight.appendChild(logoContainer)
+
+        setting.appendChild(tdLeft)
+        setting.appendChild(tdRight)
+        break
+
+      case "disallowURLDuplicates":
+        var tdLeft = document.createElement("TD")
+        tdLeft.innerHTML = "{{.settings.disallowURLDuplicates.title}}" + ":"
+
+        var tdRight = document.createElement("TD")
+        var input = content.createCheckbox(settingsKey)
+        input.checked = data
+        input.setAttribute("onchange", "javascript: this.className = 'changed'")
+        tdRight.appendChild(input)
+
         setting.appendChild(tdLeft)
         setting.appendChild(tdRight)
         break
@@ -372,18 +410,18 @@ class SettingsCategory {
         setting.appendChild(tdLeft)
         setting.appendChild(tdRight)
         break;
-      
+
       case "hostName":
-          var tdLeft = document.createElement("TD");
-          tdLeft.innerHTML = "{{.settings.hostName.title}}" + ":";
-          var tdRight = document.createElement("TD");
-          var input = content.createInput("text", "hostName", data);
-          input.setAttribute("placeholder", "{{.settings.hostName.placeholder}}");
-          input.setAttribute("onchange", "javascript: this.className = 'changed'");
-          tdRight.appendChild(input);
-          setting.appendChild(tdLeft);
-          setting.appendChild(tdRight);
-          break;
+        var tdLeft = document.createElement("TD");
+        tdLeft.innerHTML = "{{.settings.hostName.title}}" + ":";
+        var tdRight = document.createElement("TD");
+        var input = content.createInput("text", "hostName", data);
+        input.setAttribute("placeholder", "{{.settings.hostName.placeholder}}");
+        input.setAttribute("onchange", "javascript: this.className = 'changed'");
+        tdRight.appendChild(input);
+        setting.appendChild(tdLeft);
+        setting.appendChild(tdRight);
+        break;
       case "tuner":
         var tdLeft = document.createElement("TD")
         tdLeft.innerHTML = "{{.settings.tuner.title}}" + ":"
@@ -410,8 +448,8 @@ class SettingsCategory {
         tdLeft.innerHTML = "{{.settings.epgSource.title}}" + ":"
 
         var tdRight = document.createElement("TD")
-        var text:any[] = ["PMS", "XEPG"]
-        var values:any[] = ["PMS", "XEPG"]
+        var text: any[] = ["PMS", "XEPG"]
+        var values: any[] = ["PMS", "XEPG"]
 
         var select = content.createSelect(text, values, data, settingsKey)
         select.setAttribute("onchange", "javascript: this.className = 'changed'")
@@ -426,11 +464,11 @@ class SettingsCategory {
         tdLeft.innerHTML = "{{.settings.defaultMissingEPG.title}}" + ":"
 
         var tdRight = document.createElement("TD")
-        var text:any[] = [
+        var text: any[] = [
           "-", "30 Minutes (30_Minutes)", "60 Minutes (60_Minutes)", "90 Minutes (90_Minutes)",
           "120 Minutes (120_Minutes)", "180 Minutes (180_Minutes)", "240 Minutes (240_Minutes)", "360 Minutes (360_Minutes)"
         ]
-        var values:any[] = [
+        var values: any[] = [
           "-", "30_Minutes", "60_Minutes", "90_Minutes", "120_Minutes", "180_Minutes", "240_Minutes", "360_Minutes"
         ]
 
@@ -447,8 +485,8 @@ class SettingsCategory {
         tdLeft.innerHTML = "{{.settings.backupKeep.title}}" + ":"
 
         var tdRight = document.createElement("TD")
-        var text:any[] = ["5", "10", "20", "30", "40", "50"]
-        var values:any[] = ["5", "10", "20", "30", "40", "50"]
+        var text: any[] = ["5", "10", "20", "30", "40", "50"]
+        var values: any[] = ["5", "10", "20", "30", "40", "50"]
 
         var select = content.createSelect(text, values, data, settingsKey)
         select.setAttribute("onchange", "javascript: this.className = 'changed'")
@@ -463,8 +501,8 @@ class SettingsCategory {
         tdLeft.innerHTML = "{{.settings.bufferSize.title}}" + ":"
 
         var tdRight = document.createElement("TD")
-        var text:any[] = ["0.5 MB", "1 MB", "2 MB", "3 MB", "4 MB", "5 MB", "6 MB", "7 MB", "8 MB"]
-        var values:any[] = ["512", "1024", "2048", "3072", "4096", "5120", "6144", "7168", "8192"]
+        var text: any[] = ["0.5 MB", "1 MB", "2 MB", "3 MB", "4 MB", "5 MB", "6 MB", "7 MB", "8 MB"]
+        var values: any[] = ["512", "1024", "2048", "3072", "4096", "5120", "6144", "7168", "8192"]
 
         var select = content.createSelect(text, values, data, settingsKey)
         select.setAttribute("onchange", "javascript: this.className = 'changed'")
@@ -474,13 +512,13 @@ class SettingsCategory {
         setting.appendChild(tdRight)
         break
 
-       case "buffer":
+      case "buffer":
         var tdLeft = document.createElement("TD")
         tdLeft.innerHTML = "{{.settings.streamBuffering.title}}" + ":"
 
         var tdRight = document.createElement("TD")
-        var text:any[] = ["{{.settings.streamBuffering.info_false}}", "xTeVe: ({{.settings.streamBuffering.info_xteve}})", "FFmpeg: ({{.settings.streamBuffering.info_ffmpeg}})", "VLC: ({{.settings.streamBuffering.info_vlc}})"]
-        var values:any[] = ["-", "xteve", "ffmpeg", "vlc"]
+        var text: any[] = ["{{.settings.streamBuffering.info_false}}", "xTeVe: ({{.settings.streamBuffering.info_xteve}})", "FFmpeg: ({{.settings.streamBuffering.info_ffmpeg}})", "VLC: ({{.settings.streamBuffering.info_vlc}})"]
+        var values: any[] = ["-", "xteve", "ffmpeg", "vlc"]
 
         var select = content.createSelect(text, values, data, settingsKey)
         select.setAttribute("onchange", "javascript: this.className = 'changed'")
@@ -490,7 +528,7 @@ class SettingsCategory {
         setting.appendChild(tdRight)
         break
 
-    case "udpxy":
+      case "udpxy":
 
         var tdLeft = document.createElement("TD");
         tdLeft.innerHTML = "{{.settings.udpxy.title}}" + ":"
@@ -512,20 +550,25 @@ class SettingsCategory {
   }
 
 
-  createDescription(settingsKey:string):any {
+  createDescription(settingsKey: string): any {
 
     var description = document.createElement("TR")
-    var text:string
+    var text: string
     switch (settingsKey) {
 
       case "tlsMode":
         text = "{{.settings.tlsMode.description}}"
         break
-
+      case "enableTapiosinnTVLogos":
+        text = "{{.settings.tvLogos.description}}"
+        break
+      case "logosCountry":
+        text = "{{.settings.logosCountry.description}}"
+        break
       case "disallowURLDuplicates":
         text = "{{.settings.disallowURLDuplicates.description}}"
         break
-  
+
       case "authentication.web":
         text = "{{.settings.authenticationWEB.description}}"
         break
@@ -607,7 +650,7 @@ class SettingsCategory {
       case "hostIP":
         text = "{{.settings.hostIP.description}}"
         break;
-      
+
       case "hostName":
         text = "{{.settings.hostName.description}}"
         break;
@@ -676,16 +719,16 @@ class SettingsCategory {
 }
 
 class SettingsCategoryItem extends SettingsCategory {
-  headline:string
-  settingsKeys:string
+  headline: string
+  settingsKeys: string
 
-  constructor(headline:string, settingsKeys:string) {
+  constructor(headline: string, settingsKeys: string) {
     super()
     this.headline = headline
     this.settingsKeys = settingsKeys
   }
 
-  createCategory():void {
+  createCategory(): void {
     var headline = this.createCategoryHeadline(this.headline)
     var settingsKeys = this.settingsKeys
 
@@ -736,6 +779,7 @@ function showSettings() {
 
 }
 
+
 function saveSettings() {
 
   var cmd = "saveSettings"
@@ -746,8 +790,8 @@ function saveSettings() {
 
   for (let i = 0; i < settings.length; i++) {
 
-    var name:string
-    var value:any
+    var name: string
+    var value: any
 
     switch (settings[i].tagName) {
       case "INPUT":
@@ -756,7 +800,17 @@ function saveSettings() {
           case "checkbox":
             name = (settings[i] as HTMLInputElement).name
             value = (settings[i] as HTMLInputElement).checked
-            newSettings[name] = value
+            switch (name) {
+              case "enableTapiosinnTVLogos":
+                if (value) {
+                  LOGO_UPDATE_INTERVAL = setInterval(checkLogos, 5000)
+                }
+                newSettings[name] = value
+                break
+              default:
+                newSettings[name] = value
+                break
+            }
             break
 
           case "text":
@@ -766,7 +820,7 @@ function saveSettings() {
             switch (name) {
               case "update":
                 value = value.split(",")
-                value = value.filter(function(e:any) { return e})
+                value = value.filter(function (e: any) { return e })
                 break
 
               case "buffer.timeout":
@@ -785,7 +839,7 @@ function saveSettings() {
         value = (settings[i] as HTMLSelectElement).value
 
         // If the value is a number, store it as a number
-        if(isNaN(value)){
+        if (isNaN(value)) {
           newSettings[name] = value
         } else {
           newSettings[name] = parseInt(value)
@@ -800,7 +854,7 @@ function saveSettings() {
   var data = new Object()
   data["settings"] = newSettings
 
-  var server:Server = new Server(cmd)
+  var server: Server = new Server(cmd)
   server.request(data)
 
 }

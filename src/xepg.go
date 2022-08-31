@@ -51,8 +51,8 @@ func buildXEPG(background bool) {
 	System.ScanInProgress = 1
 
 	var err error
-
 	Data.Cache.Images, err = imgcache.New(System.Folder.ImagesCache, fmt.Sprintf("%s://%s/images/", System.ServerProtocol.WEB, System.Domain), Settings.CacheImages)
+
 	if err != nil {
 		ShowError(err, 0)
 	}

@@ -60,6 +60,8 @@ func maintenance() {
 					Data.Cache.XMLTV = make(map[string]XMLTV)
 					buildXEPG(false)
 
+					// Check if TV logos JSON needs updating
+					downloadLogoJSON()
 				}
 
 			}

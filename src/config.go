@@ -23,7 +23,7 @@ var Settings SettingsStruct
 var Data DataStruct
 
 // SystemFiles : All System Files
-var SystemFiles = []string{"authentication.json", "pms.json", "settings.json", "xepg.json", "urls.json"}
+var SystemFiles = []string{"authentication.json", "pms.json", "settings.json", "xepg.json", "urls.json", "tvlogos.json"}
 
 // BufferInformation : Information about the Buffer (active Streams, maximum Streams)
 var BufferInformation sync.Map
@@ -101,7 +101,9 @@ func Init() (err error) {
 	System.File.ServerCert = getPlatformFile(fmt.Sprintf("%sxteve.crt", System.Folder.Certificates))
 	System.File.ServerCertPrivKey = getPlatformFile(fmt.Sprintf("%sxteve.key", System.Folder.Certificates))
 	System.File.XML = getPlatformFile(fmt.Sprintf("%s%s.xml", System.Folder.Data, System.AppName))
+	System.File.XMLUploaded = getPlatformFile(fmt.Sprintf("%s%s_uploaded.xml", System.Folder.Data, System.AppName))
 	System.File.M3U = getPlatformFile(fmt.Sprintf("%s%s.m3u", System.Folder.Data, System.AppName))
+	System.File.M3UUploaded = getPlatformFile(fmt.Sprintf("%s%s_uploaded.m3u", System.Folder.Data, System.AppName))
 
 	System.Compressed.GZxml = getPlatformFile(fmt.Sprintf("%s%s.xml.gz", System.Folder.Data, System.AppName))
 
@@ -155,6 +157,13 @@ func Init() (err error) {
 	err = resolveHostIP()
 	if err != nil {
 		ShowError(err, 1002)
+	}
+
+	if Settings.EnableTapiosinnTVLogos {
+		// Run this in the background, can take a little bit to fetch the data
+		go func() {
+			downloadLogoJSON()
+		}()
 	}
 
 	showInfo(fmt.Sprintf("System IP Addresses:IPv4: %d | IPv6: %d", len(System.IPAddressesV4), len(System.IPAddressesV6)))

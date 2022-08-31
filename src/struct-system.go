@@ -40,6 +40,7 @@ type SystemStruct struct {
 	File struct {
 		Authentication    string
 		M3U               string
+		M3UUploaded       string
 		PMS               string
 		ServerCert        string
 		ServerCertPrivKey string
@@ -47,6 +48,8 @@ type SystemStruct struct {
 		URLS              string
 		XEPG              string
 		XML               string
+		XMLUploaded       string
+		TVLogos           string
 	}
 
 	Compressed struct {
@@ -121,6 +124,11 @@ type GitStruct struct {
 	Version  string `json:"version"`
 }
 
+type LogosStruct struct {
+	URL             string            `json:"url"`
+	LogoInformation []LogoInformation `json:"LogoInformation"`
+}
+
 // DataStruct : All Data is stored here. (Lineup, XMLTV)
 type DataStruct struct {
 	Cache struct {
@@ -169,6 +177,8 @@ type DataStruct struct {
 		Channels  map[string]interface{}
 		XEPGCount int64
 	}
+
+	Logos LogosStruct
 }
 
 // Filter : Used for the Filter Rules
@@ -271,30 +281,32 @@ type Notification struct {
 
 // SettingsStruct : Content of settings.json
 type SettingsStruct struct {
-	API                   bool     `json:"api"`
-	AuthenticationAPI     bool     `json:"authentication.api"`
-	AuthenticationM3U     bool     `json:"authentication.m3u"`
-	AuthenticationPMS     bool     `json:"authentication.pms"`
-	AuthenticationWEB     bool     `json:"authentication.web"`
-	AuthenticationXML     bool     `json:"authentication.xml"`
-	BackupKeep            int      `json:"backup.keep"`
-	BackupPath            string   `json:"backup.path"`
-	Branch                string   `json:"git.branch,omitempty"`
-	Buffer                string   `json:"buffer"`
-	BufferSize            int      `json:"buffer.size.kb"`
-	BufferTimeout         float64  `json:"buffer.timeout"`
-	CacheImages           bool     `json:"cache.images"`
-	ClearXMLTVCache       bool     `json:"clearXMLTVCache"`
-	DefaultMissingEPG     string   `json:"defaultMissingEPG"`
-	DisallowURLDuplicates bool     `json:"disallowURLDuplicates"`
-	EnableMappedChannels  bool     `json:"enableMappedChannels"`
-	EpgSource             string   `json:"epgSource"`
-	FFmpegOptions         string   `json:"ffmpeg.options"`
-	FFmpegPath            string   `json:"ffmpeg.path"`
-	VLCOptions            string   `json:"vlc.options"`
-	VLCPath               string   `json:"vlc.path"`
-	FileM3U               []string `json:"file,omitempty"`  // In the Wizard, the M3U is saved in a Slice
-	FileXMLTV             []string `json:"xmltv,omitempty"` // Old Storage System of the provider XML File Slice (Required for the conversion to the new one)
+	API                    bool     `json:"api"`
+	AuthenticationAPI      bool     `json:"authentication.api"`
+	AuthenticationM3U      bool     `json:"authentication.m3u"`
+	AuthenticationPMS      bool     `json:"authentication.pms"`
+	AuthenticationWEB      bool     `json:"authentication.web"`
+	AuthenticationXML      bool     `json:"authentication.xml"`
+	BackupKeep             int      `json:"backup.keep"`
+	BackupPath             string   `json:"backup.path"`
+	Branch                 string   `json:"git.branch,omitempty"`
+	Buffer                 string   `json:"buffer"`
+	BufferSize             int      `json:"buffer.size.kb"`
+	BufferTimeout          float64  `json:"buffer.timeout"`
+	CacheImages            bool     `json:"cache.images"`
+	ClearXMLTVCache        bool     `json:"clearXMLTVCache"`
+	DefaultMissingEPG      string   `json:"defaultMissingEPG"`
+	DisallowURLDuplicates  bool     `json:"disallowURLDuplicates"`
+	EnableTapiosinnTVLogos bool     `json:"enableTapiosinnTVLogos"`
+	LogosCountry           string   `json:"logosCountry"`
+	EnableMappedChannels   bool     `json:"enableMappedChannels"`
+	EpgSource              string   `json:"epgSource"`
+	FFmpegOptions          string   `json:"ffmpeg.options"`
+	FFmpegPath             string   `json:"ffmpeg.path"`
+	VLCOptions             string   `json:"vlc.options"`
+	VLCPath                string   `json:"vlc.path"`
+	FileM3U                []string `json:"file,omitempty"`  // In the Wizard, the M3U is saved in a Slice
+	FileXMLTV              []string `json:"xmltv,omitempty"` // Old Storage System of the provider XML File Slice (Required for the conversion to the new one)
 
 	Files struct {
 		HDHR  map[string]interface{} `json:"hdhr"`

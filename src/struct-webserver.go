@@ -33,6 +33,8 @@ type RequestStruct struct {
 		DefaultMissingEPG        *string   `json:"defaultMissingEPG,omitempty"`
 		DisallowURLDuplicates    *bool     `json:"disallowURLDuplicates,omitempty"`
 		EnableMappedChannels     *bool     `json:"enableMappedChannels,omitempty"`
+		EnableTapiosinnTVLogos   *bool     `json:"enableTapiosinnTVLogos,omitempty"`
+		LogosCountry             string    `json:"logosCountry,omitempty"`
 		EpgSource                *string   `json:"epgSource,omitempty"`
 		FFmpegOptions            *string   `json:"ffmpeg.options,omitempty"`
 		FFmpegPath               *string   `json:"ffmpeg.path,omitempty"`
@@ -53,6 +55,10 @@ type RequestStruct struct {
 		SchemeXML                *string   `json:"scheme.xml,omitempty"`
 		StoreBufferInRAM         *bool     `json:"storeBufferInRAM,omitempty"`
 	} `json:"settings,omitempty"`
+
+	// Upload Logo
+	LogMsg   string `json:"logMsg,omitempty"`
+	LogLevel int    `json:"logLevelg,omitempty"`
 
 	// Upload Logo
 	Filename string `json:"filename,omitempty"`
@@ -116,6 +122,8 @@ type ResponseStruct struct {
 	IPAddressesV4Host   []string               `json:"ipAddressesV4Host"` // Every IPv4 address to display in web client
 	Log                 WebScreenLogStruct     `json:"log"`
 	LogoURL             string                 `json:"logoURL,omitempty"`
+	M3UURL              string                 `json:"m3uURL,omitempty"`
+	XMLURL              string                 `json:"xmlURL,omitempty"`
 	OpenLink            string                 `json:"openLink,omitempty"`
 	OpenMenu            string                 `json:"openMenu,omitempty"`
 	Reload              bool                   `json:"reload,omitempty"`
@@ -125,6 +133,7 @@ type ResponseStruct struct {
 	Users               map[string]interface{} `json:"users,omitempty"`
 	Wizard              int                    `json:"wizard,omitempty"`
 	XEPG                map[string]interface{} `json:"xepg"`
+	Tvlogos             LogosStruct            `json:"tvlogos"`
 
 	Notification map[string]Notification `json:"notification,omitempty"`
 }

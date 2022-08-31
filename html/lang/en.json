@@ -46,7 +46,15 @@
     "update": "Update",
     "craeteAccount": "Create Account",
     "resetLogs": "Reset Logs",
-    "uploadLogo": "Upload Logo"
+    "uploadLogo": "Upload Logo",
+    "uploadM3U": "Upload M3U",
+    "uploadXML": "Upload XML"
+  },
+  "checkbox": {
+    "shiftChannel": {
+      "label": "Shift Channels",
+      "title": "Shift existing channels up by 1 channel number if moving a channel to an already used channel number"
+    }
   },
   "filter": {
     "table": {
@@ -230,6 +238,11 @@
     "channelLogo": {
       "title": "Logo URL",
       "placeholder": "",
+      "description": "URL for the logo. You can type in this field to search Tapiosinn's tv-logos repository"
+    },
+    "channelLogoPreview": {
+      "title": "Channel Logo Preview",
+      "placeholder": "",
       "description": ""
     },
     "updateChannelLogo": {
@@ -366,7 +379,15 @@
     },
     "tlsMode": {
       "title": "TLS (HTTPS) mode",
-      "description": "Changes web server protocol to HTTPS.<br>For details, see <a>https://github.com/SenexCrenshaw/xTeVe#tls-mode</a>"
+      "description": "Changes web server protocol to HTTPS.<br>For details, see <a href='https://github.com/SenexCrenshaw/xTeVe#tls-mode' target='_blank'>https://github.com/SenexCrenshaw/xTeVe#tls-mode</a>"
+    },
+    "tvLogos": {
+      "title": "Enable ability to find station logos",
+      "description": "Adds the ability to find station logos from Tapiosinn's tv-logos Github repository, first run may take upwards of ~30 seconds to fetch data. See <a href='https://github.com/Tapiosinn/tv-logos/' target='_blank'>https://github.com/Tapiosinn/tv-logos/</a>"
+    },
+    "logosCountry": {
+      "title": "Filter Tapiosinn logos by country",
+      "description": "Type in this field to search Tapiosinn's tv-logos repository"
     },
     "filesUpdate": {
       "title": "Updates all files at startup",

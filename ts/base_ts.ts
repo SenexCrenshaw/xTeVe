@@ -1,14 +1,14 @@
-var SERVER = new Object()
-var BULK_EDIT:Boolean = false
-var COLUMN_TO_SORT:number
-var SEARCH_MAPPING = new Object()
-var UNDO = new Object()
-var SERVER_CONNECTION = false
+var SERVER = {}
+var BULK_EDIT: Boolean = false
+var COLUMN_TO_SORT: number
+var SEARCH_MAPPING = {}
+var UNDO = {}
+//var SERVER_CONNECTION = false
 var WS_AVAILABLE = false
-
+var LOGO_UPDATE_INTERVAL: number
 
 // Menu
-var menuItems = new Array()
+var menuItems = []
 menuItems.push(new MainMenuItem("playlist", "{{.mainMenu.item.playlist}}", "m3u.png", "{{.mainMenu.headline.playlist}}"))
 menuItems.push(new MainMenuItem("filter", "{{.mainMenu.item.filter}}", "filter.png", "{{.mainMenu.headline.filter}}"))
 menuItems.push(new MainMenuItem("xmltv", "{{.mainMenu.item.xmltv}}", "xmltv.png", "{{.mainMenu.headline.xmltv}}"))
@@ -20,7 +20,7 @@ menuItems.push(new MainMenuItem("logout", "{{.mainMenu.item.logout}}", "logout.p
 
 // Settings categories
 var settingsCategory = new Array()
-settingsCategory.push(new SettingsCategoryItem("{{.settings.category.general}}", "tlsMode,xteveAutoUpdate,hostIP,hostName,tuner,epgSource,disallowURLDuplicates,clearXMLTVCache,api"))
+settingsCategory.push(new SettingsCategoryItem("{{.settings.category.general}}", "tlsMode,xteveAutoUpdate,hostIP,hostName,tuner,epgSource,enableTapiosinnTVLogos,logosCountry,disallowURLDuplicates,clearXMLTVCache,api"))
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.mapping}}", "defaultMissingEPG,enableMappedChannels"))
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.files}}", "update,files.update,temp.path,cache.images,xepg.replace.missing.images"))
 settingsCategory.push(new SettingsCategoryItem("{{.settings.category.streaming}}", "buffer,udpxy,buffer.size.kb,storeBufferInRAM,buffer.timeout,user.agent,ffmpeg.path,ffmpeg.options,vlc.path,vlc.options"))
@@ -29,7 +29,7 @@ settingsCategory.push(new SettingsCategoryItem("{{.settings.category.authenticat
 
 function showPopUpElement(elm) {
 
-  var allElements = new Array("popup-custom");
+  var allElements = ["popup-custom"]
 
   for (var i = 0; i < allElements.length; i++) {
     showElement(allElements[i], false)
@@ -37,32 +37,32 @@ function showPopUpElement(elm) {
 
   showElement(elm, true)
 
-  setTimeout(function(){
-    showElement("popup", true);
-  }, 10);
+  setTimeout(function () {
+    showElement("popup", true)
+  }, 10)
 
   return
 }
 
 function showElement(elmID, type) {
 
-  var cssClass:string
-  switch(type) {
-    case true:  cssClass = "block"; break;
-    case false: cssClass = "none"; break;
+  var cssClass: string
+  switch (type) {
+    case true: cssClass = "block"; break
+    case false: cssClass = "none"; break
   }
 
-  document.getElementById(elmID).className = cssClass;
+  document.getElementById(elmID).className = cssClass
 }
 
 function changeButtonAction(element, buttonID, attribute) {
-  var value = element.options[element.selectedIndex].value;
+  var value = element.options[element.selectedIndex].value
   document.getElementById(buttonID).setAttribute(attribute, value)
 }
 
-function getLocalData(dataType, id):object {
+function getLocalData(dataType, id): object {
   let data = {}
-  switch(dataType) {
+  switch (dataType) {
     case "m3u":
       data = SERVER["settings"]["files"][dataType][id]
       break
@@ -111,12 +111,12 @@ function getLocalData(dataType, id):object {
 }
 
 function getOwnObjProps(object: Object): string[] {
-  return object ? Object.getOwnPropertyNames(object) : [];
+  return object ? Object.getOwnPropertyNames(object) : []
 }
 
-function getAllSelectedChannels():string[] {
+function getAllSelectedChannels(): string[] {
 
-  var channels:string[] = new Array()
+  var channels: string[] = []
 
   if (BULK_EDIT == false) {
     return channels
@@ -141,7 +141,7 @@ function getAllSelectedChannels():string[] {
 
 function selectAllChannels() {
 
-  var bulk:Boolean = false
+  var bulk: Boolean = false
   var trs = document.getElementById("content_table").getElementsByTagName("TR")
 
   if ((trs[0].firstChild.firstChild as HTMLInputElement).checked == true) {
@@ -174,17 +174,17 @@ function selectAllChannels() {
 function bulkEdit() {
 
   BULK_EDIT = !BULK_EDIT
-  var className:string
-  var rows = document.getElementsByClassName("bulk");
+  var className: string
+  var rows = document.getElementsByClassName("bulk")
 
   switch (BULK_EDIT) {
     case true:
       className = "bulk showBulk"
-      break;
+      break
 
     case false:
       className = "bulk hideBulk"
-      break;
+      break
   }
 
   for (var i = 0; i < rows.length; i++) {
@@ -198,84 +198,84 @@ function bulkEdit() {
 function sortTable(column) {
 
   if (column == COLUMN_TO_SORT) {
-    return;
+    return
   }
 
-  const table       = document.getElementById("content_table");
-  const tableHead   = table.getElementsByTagName("TR")[0];
-  const tableItems  = tableHead.getElementsByTagName("TD");
+  const table = document.getElementById("content_table")
+  const tableHead = table.getElementsByTagName("TR")[0]
+  const tableItems = tableHead.getElementsByTagName("TD")
 
   type SortEntry = {
-    key: string | number;
-    row: HTMLTableRowElement;
+    key: string | number
+    row: HTMLTableRowElement
   }
 
-  const sortArr: SortEntry[] = [];
-  let xValue: string | number;
+  const sortArr: SortEntry[] = []
+  let xValue: string | number
 
-  if (column >= 0 && COLUMN_TO_SORT >= 0)  {
-    tableItems[COLUMN_TO_SORT].className = "pointer";
-    tableItems[column].className = "sortThis";
+  if (column >= 0 && COLUMN_TO_SORT >= 0) {
+    tableItems[COLUMN_TO_SORT].className = "pointer"
+    tableItems[column].className = "sortThis"
   }
 
-  COLUMN_TO_SORT = column;
+  COLUMN_TO_SORT = column
 
-  const rows = (table as HTMLTableElement).rows;
+  const rows = (table as HTMLTableElement).rows
 
   if (rows[1] != undefined) {
-    const tableHeader = rows[0];
+    const tableHeader = rows[0]
 
-    let x: any = rows[1].getElementsByTagName("TD")[column];
+    let x: any = rows[1].getElementsByTagName("TD")[column]
 
     for (let i = 1; i < rows.length; i++) {
 
-      x = rows[i].getElementsByTagName("TD")[column];
+      x = rows[i].getElementsByTagName("TD")[column]
 
-      switch(x.childNodes[0].tagName.toLowerCase()) {
+      switch (x.childNodes[0].tagName.toLowerCase()) {
         case "input":
-          xValue = x.getElementsByTagName("INPUT")[0].value.toLowerCase();
-          break;
+          xValue = x.getElementsByTagName("INPUT")[0].value.toLowerCase()
+          break
 
         case "p":
-          xValue = x.getElementsByTagName("P")[0].innerText.toLowerCase();
-          break;
+          xValue = x.getElementsByTagName("P")[0].innerText.toLowerCase()
+          break
 
         default:
-          break;
+          break
       }
 
-      sortArr.push({key: xValue ? xValue : i, row: rows[i]});
+      sortArr.push({ key: xValue ? xValue : i, row: rows[i] })
 
     }
 
     while (table.firstChild) {
-      table.removeChild(table.firstChild);
+      table.removeChild(table.firstChild)
     }
 
     sortArr.sort((se1: SortEntry, se2: SortEntry): number => {
-      const se1KeyNum = parseFloat(String(se1.key));
-      const se2KeyNum = parseFloat(String(se2.key));
+      const se1KeyNum = parseFloat(String(se1.key))
+      const se2KeyNum = parseFloat(String(se2.key))
 
       if (!isNaN(se1KeyNum) && !isNaN(se2KeyNum)) {
-        return se1KeyNum - se2KeyNum;
+        return se1KeyNum - se2KeyNum
       }
 
       if (se1.key < se2.key) {
-        return -1;
+        return -1
       }
 
       if (se1.key > se2.key) {
-        return 1;
+        return 1
       }
 
-      return 0;
-    });
+      return 0
+    })
 
-    table.appendChild(tableHeader);
+    table.appendChild(tableHeader)
 
     sortArr.forEach((se: SortEntry) => {
-      table.appendChild(se.row);
-    });
+      table.appendChild(se.row)
+    })
 
   }
 
@@ -284,11 +284,11 @@ function sortTable(column) {
 
 function createSearchObj() {
 
-  SEARCH_MAPPING = new Object()
+  SEARCH_MAPPING = {}
   var data = SERVER["xepg"]["epgMapping"]
   var channels = getOwnObjProps(data)
 
-  var channelKeys:string[] = ["x-active", "x-channelID", "x-name", "updateChannelNameRegex", "_file.m3u.name", "x-group-title", "x-xmltv-file"]
+  var channelKeys: string[] = ["x-active", "x-channelID", "x-name", "updateChannelNameRegex", "_file.m3u.name", "x-group-title", "x-xmltv-file"]
 
   channels.forEach(id => {
 
@@ -299,11 +299,11 @@ function createSearchObj() {
         switch (data[id][key]) {
           case true:
             SEARCH_MAPPING[id] = "online "
-            break;
+            break
 
           case false:
             SEARCH_MAPPING[id] = "offline "
-            break;
+            break
 
         }
 
@@ -332,7 +332,7 @@ function createSearchObj() {
 
 function searchInMapping() {
 
-  var searchValue = (document.getElementById("searchMapping") as HTMLInputElement).value;
+  var searchValue = (document.getElementById("searchMapping") as HTMLInputElement).value
   var trs = document.getElementById("content_table").getElementsByTagName("TR")
 
   for (var i = 1; i < trs.length; ++i) {
@@ -343,11 +343,11 @@ function searchInMapping() {
     switch (element.toLowerCase().includes(searchValue.toLowerCase())) {
       case true:
         document.getElementById(id).style.display = ""
-        break;
+        break
 
       case false:
         document.getElementById(id).style.display = "none"
-        break;
+        break
     }
 
 
@@ -358,17 +358,17 @@ function searchInMapping() {
 
 function calculateWrapperHeight() {
 
-  if (document.getElementById("box-wrapper")){
+  if (document.getElementById("box-wrapper")) {
 
-    var elm = document.getElementById("box-wrapper");
+    var elm = document.getElementById("box-wrapper")
 
-    var divs = new Array("myStreamsBox", "clientInfo", "content");
-    var elementsHeight = 0 - elm.offsetHeight;
+    var divs = ["myStreamsBox", "clientInfo", "content"]
+    var elementsHeight = 0 - elm.offsetHeight
     for (var i = 0; i < divs.length; i++) {
-      elementsHeight = elementsHeight + document.getElementById(divs[i]).offsetHeight;
+      elementsHeight = elementsHeight + document.getElementById(divs[i]).offsetHeight
     }
 
-    elm.style.height = window.innerHeight - elementsHeight + "px";
+    elm.style.height = window.innerHeight - elementsHeight + "px"
 
   }
 
@@ -379,8 +379,8 @@ function changeChannelNumber(element) {
 
   var dbID = element.parentNode.parentNode.id
 
-  var newNumber:number = parseFloat(element.value)
-  var channelNumbers:number[] = []
+  var newNumber: number = parseFloat(element.value)
+  var channelNumbers: number[] = []
   var data = SERVER["xepg"]["epgMapping"]
   var channels = getOwnObjProps(data)
 
@@ -396,24 +396,50 @@ function changeChannelNumber(element) {
 
   })
 
-  for (var i = 0; i < channelNumbers.length; i++) {
+  var newChannel = newNumber
+  var emptyChannel = newNumber
+
+  for (let i = 0; i < channelNumbers.length; i++) {
 
     if (channelNumbers.indexOf(newNumber) == -1) {
+      emptyChannel = newNumber
       break
     }
 
     if (Math.floor(newNumber) == newNumber) {
       newNumber = newNumber + 1
     } else {
-      newNumber = newNumber + 0.1;
+      newNumber = newNumber + 0.1
       newNumber.toFixed(1)
       newNumber = Math.round(newNumber * 10) / 10
     }
 
   }
 
-  data[dbID]["x-channelID"] = newNumber.toString()
-  element.value = newNumber
+  if ((document.getElementById('shiftChannel') as HTMLInputElement).checked) {
+    if (emptyChannel == newChannel) {
+      data[dbID]["x-channelID"] = newNumber.toString()
+    } else {
+      var prevName = ""
+      for (let i = newChannel; i <= emptyChannel; i++) {
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            if (data[key]['x-channelID'] == i && data[key]["x-name"] != prevName) {
+              prevName = data[key]["x-name"]
+              data[key]["x-channelID"] = (i + 1).toString()
+              document.getElementById(key).querySelectorAll('input')[1].value = (i + 1).toString()
+              break
+            }
+          }
+        }
+      }
+      data[dbID]["x-channelID"] = newChannel.toString()
+    }
+    element.value = newChannel
+  } else {
+    data[dbID]["x-channelID"] = newNumber.toString();
+    element.value = newNumber;
+  }
 
   if (COLUMN_TO_SORT == 1) {
     COLUMN_TO_SORT = -1
@@ -425,27 +451,27 @@ function changeChannelNumber(element) {
 
 function backup() {
 
-  var data = new Object()
+  var data = {}
   var cmd = "xteveBackup"
-  var server:Server = new Server(cmd)
+  var server: Server = new Server(cmd)
   server.request(data)
 
   return
 
 }
 
-function toggleChannelStatus(id:string) {
+function toggleChannelStatus(id: string) {
 
-  var element:any
-  var status:boolean
+  var element: any
+  var status: boolean
 
-  if(document.getElementById("active")) {
+  if (document.getElementById("active")) {
     var checkbox = (document.getElementById("active") as HTMLInputElement)
     status = (checkbox).checked
   }
 
 
-  var ids:string[] = getAllSelectedChannels()
+  var ids: string[] = getAllSelectedChannels()
   if (ids.length == 0) {
     ids.push(id)
   }
@@ -473,7 +499,7 @@ function toggleChannelStatus(id:string) {
 
       case false:
         // code...
-        break;
+        break
     }
 
     if (channel["x-active"] == false) {
@@ -482,26 +508,26 @@ function toggleChannelStatus(id:string) {
       document.getElementById(id).className = "activeEPG"
     }
 
-  });
+  })
 
 }
 
 function toggleGroupUpdateCb(xepgId: string, target: HTMLInputElement) {
-  target.className = 'changed';
+  target.className = 'changed'
 
-  const groupInput: HTMLInputElement = document.querySelector('input[name="x-group-title"]');
-  const mapping = getLocalData('mapping', xepgId);
+  const groupInput: HTMLInputElement = document.querySelector('input[name="x-group-title"]')
+  const mapping = getLocalData('mapping', xepgId)
 
   if (target.checked) {
-    groupInput.dataset.oldValue = groupInput.value;
-    groupInput.value = mapping['group-title'];
-    groupInput.disabled = true;
+    groupInput.dataset.oldValue = groupInput.value
+    groupInput.value = mapping['group-title']
+    groupInput.disabled = true
   } else {
-    groupInput.value = groupInput.dataset.oldValue;
-    groupInput.disabled = false;
+    groupInput.value = groupInput.dataset.oldValue
+    groupInput.disabled = false
   }
 
-  groupInput.className = 'changed';
+  groupInput.className = 'changed'
 }
 
 function restore() {
@@ -510,37 +536,37 @@ function restore() {
     document.getElementById('upload').remove()
   }
 
-  var restore = document.createElement("INPUT");
-  restore.setAttribute("type", "file");
-  restore.setAttribute("class", "notVisible");
-  restore.setAttribute("name", "");
-  restore.id = "upload";
+  var restore = document.createElement("INPUT")
+  restore.setAttribute("type", "file")
+  restore.setAttribute("class", "notVisible")
+  restore.setAttribute("name", "")
+  restore.id = "upload"
 
-  document.body.appendChild(restore);
-  restore.click();
+  document.body.appendChild(restore)
+  restore.click()
 
-  restore.onchange = function() {
+  restore.onchange = function () {
 
     var filename = (restore as HTMLInputElement).files[0].name
-    var check = confirm("File: " + filename + "\n{{.confirm.restore}}");
+    var check = confirm("File: " + filename + "\n{{.confirm.restore}}")
 
     if (check == true) {
 
-      var reader  = new FileReader();
-      var file = (document.querySelector('input[type=file]') as HTMLInputElement).files[0];
+      var reader = new FileReader()
+      var file = (document.querySelector('input[type=file]') as HTMLInputElement).files[0]
 
       if (file) {
 
-        reader.readAsDataURL(file);
-        reader.onload = function() {
-          var data = new Object();
+        reader.readAsDataURL(file)
+        reader.onload = function () {
+          var data = {}
           var cmd = "xteveRestore"
-          data["base64"]  = reader.result
+          data["base64"] = reader.result
 
-          var server:Server = new Server(cmd)
+          var server: Server = new Server(cmd)
           server.request(data)
 
-        };
+        }
 
       } else {
         alert("File could not be loaded")
@@ -555,49 +581,40 @@ function restore() {
   return
 }
 
-function uploadLogo() {
 
-  if (document.getElementById('upload')) {
-    document.getElementById('upload').remove()
-  }
+function uploadM3U() {
+  var upload = document.createElement("INPUT")
+  upload.setAttribute("type", "file")
+  upload.setAttribute("class", "notVisible")
+  upload.setAttribute("name", "")
+  upload.setAttribute("accept", ".m3u,.m3u.gz")
+  upload.id = "m3uupload"
 
-  var upload = document.createElement("INPUT");
-  upload.setAttribute("type", "file");
-  upload.setAttribute("class", "notVisible");
-  upload.setAttribute("name", "");
-  upload.id = "upload";
+  document.body.appendChild(upload)
+  upload.click()
 
-  document.body.appendChild(upload);
-  upload.click();
-
-  upload.onblur = function() {
+  upload.onblur = function () {
     alert()
   }
 
-  upload.onchange = function() {
+  upload.onchange = function () {
+    var input = this as HTMLInputElement
 
-    var filename = (upload as HTMLInputElement).files[0].name
-
-    var reader  = new FileReader();
-    var file = (document.querySelector('input[type=file]') as HTMLInputElement).files[0];
+    var reader = new FileReader()
+    var file = input.files[0]
 
     if (file) {
 
-      reader.readAsDataURL(file);
-      reader.onload = function() {
-        var data = new Object();
-        var cmd = "uploadLogo"
-        data["base64"]  = reader.result
-        data["filename"]  = file.name
+      reader.readAsDataURL(file)
+      reader.onload = function () {
+        var data = {}
+        var cmd = "uploadM3U"
+        data["base64"] = reader.result
+        data["filename"] = file.name
 
-        var server:Server = new Server(cmd)
+        var server: Server = new Server(cmd)
         server.request(data)
-
-        var updateLogo = (document.getElementById('update-icon') as HTMLInputElement)
-        updateLogo.checked = false
-        updateLogo.className = "changed"
-
-      };
+      }
 
     } else {
       alert("File could not be loaded")
@@ -609,20 +626,120 @@ function uploadLogo() {
 
 }
 
-function checkUndo(key:string) {
+function uploadXML() {
+  var upload = document.createElement("INPUT")
+  upload.setAttribute("type", "file")
+  upload.setAttribute("class", "notVisible")
+  upload.setAttribute("name", "")
+  upload.setAttribute("accept", ".xml,.xml.gz")
+
+  upload.id = "xmlupload"
+
+  document.body.appendChild(upload)
+  upload.click()
+
+  upload.onblur = function () {
+    alert()
+  }
+
+  upload.onchange = function () {
+    var input = this as HTMLInputElement
+
+    var reader = new FileReader()
+    var file = input.files[0]
+
+    if (file) {
+
+      reader.readAsDataURL(file)
+      reader.onload = function () {
+        var data = {}
+        var cmd = "uploadXML"
+        data["base64"] = reader.result
+        data["filename"] = file.name
+
+        var server: Server = new Server(cmd)
+        server.request(data)
+      }
+
+    } else {
+      alert("File could not be loaded")
+    }
+
+    upload.remove()
+    return
+  }
+
+}
+
+
+function uploadLogo() {
+
+  if (document.getElementById('upload')) {
+    document.getElementById('upload').remove()
+  }
+
+  var upload = document.createElement("INPUT")
+  upload.setAttribute("type", "file")
+  upload.setAttribute("class", "notVisible")
+  upload.setAttribute("name", "")
+  upload.id = "upload"
+
+  document.body.appendChild(upload)
+  upload.click()
+
+  upload.onblur = function () {
+    alert()
+  }
+
+  upload.onchange = function () {
+
+    var filename = (upload as HTMLInputElement).files[0].name
+
+    var reader = new FileReader()
+    var file = (document.querySelector('input[type=file]') as HTMLInputElement).files[0]
+
+    if (file) {
+
+      reader.readAsDataURL(file)
+      reader.onload = function () {
+        var data = {}
+        var cmd = "uploadLogo"
+        data["base64"] = reader.result
+        data["filename"] = file.name
+
+        var server: Server = new Server(cmd)
+        server.request(data)
+
+        var updateLogo = (document.getElementById('update-icon') as HTMLInputElement)
+        updateLogo.checked = false
+        updateLogo.className = "changed"
+
+      }
+
+    } else {
+      alert("File could not be loaded")
+    }
+
+    upload.remove()
+    return
+  }
+
+}
+
+function checkUndo(key: string) {
 
   switch (key) {
     case "epgMapping":
       if (UNDO.hasOwnProperty(key)) {
         SERVER["xepg"][key] = JSON.parse(JSON.stringify(UNDO[key]))
       } else {
-        UNDO[key] = JSON.parse(JSON.stringify(SERVER["xepg"][key]));
+        UNDO[key] = JSON.parse(JSON.stringify(SERVER["xepg"][key]))
       }
-      break;
+      break
 
     default:
 
-      break;
+      break
   }
 
   return
@@ -630,7 +747,26 @@ function checkUndo(key:string) {
 
 function updateLog() {
 
-  var server:Server = new Server("updateLog")
+  var server: Server = new Server("updateLog")
   server.request(new Object())
 
+}
+
+function ImageExist(url: string) {
+  var img = new Image();
+  img.src = url;
+  return img.height != 0;
+}
+
+function getDefaultLogo() {
+  return (SERVER['settings']['tlsMode']) ? 'https://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png' : 'http://' + SERVER['clientInfo']['DVR'] + '/web/img/tv-test-pattern.png';
+}
+
+function checkLogos() {
+  if (SERVER['tvlogos'].hasOwnProperty('files')) {
+    clearInterval(LOGO_UPDATE_INTERVAL)
+  } else {
+    var server: Server = new Server("updateLogos")
+    server.request(new Object())
+  }
 }

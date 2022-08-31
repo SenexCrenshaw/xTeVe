@@ -1,29 +1,23 @@
 class Server {
-  protocol:string
-  cmd:string
+  protocol: string
+  cmd: string
 
-  constructor(cmd:string) {
+  constructor(cmd: string) {
     this.cmd = cmd
   }
 
-  request(data:Object):any {
-
-    if (SERVER_CONNECTION == true) {
-      return
-    }
-
-    SERVER_CONNECTION = true
+  request(data: Object): any {
 
     if (this.cmd != "updateLog") {
       showElement("loading", true)
       UNDO = new Object()
     }
-    
-    switch(window.location.protocol) {
-      case "http:": 
+
+    switch (window.location.protocol) {
+      case "http:":
         this.protocol = "ws://"
         break
-      case "https:": 
+      case "https:":
         this.protocol = "wss://"
         break
     }
@@ -32,17 +26,16 @@ class Server {
 
     data["cmd"] = this.cmd
     var ws = new WebSocket(url)
-    ws.onopen = function() {
+    ws.onopen = function () {
 
       WS_AVAILABLE = true
       this.send(JSON.stringify(data));
 
     }
 
-    ws.onerror = function(wsErrEvt) {
-      
+    ws.onerror = function (wsErrEvt) {
+
       console.log("No websocket connection to xTeVe could be established. Check your network configuration.")
-      SERVER_CONNECTION = false
 
       if (WS_AVAILABLE == false) {
         alert("No websocket connection to xTeVe could be established. Check your network configuration.")
@@ -52,8 +45,7 @@ class Server {
 
 
     ws.onmessage = function (wsMessageEvt) {
-      
-      SERVER_CONNECTION = false
+
       showElement("loading", false)
 
       const response: Object = JSON.parse(wsMessageEvt.data);
@@ -86,6 +78,18 @@ class Server {
         return
       }
 
+      if (response.hasOwnProperty("m3uURL")) {
+        var div = (document.getElementById("m3u") as HTMLInputElement)
+        div.value = response["m3uURL"]
+        return
+      }
+
+      if (response.hasOwnProperty("xmlURL")) {
+        var div = (document.getElementById("xmltv") as HTMLInputElement)
+        div.value = response["xmlURL"]
+        return
+      }
+
       switch (data["cmd"]) {
         case "updateLog":
           SERVER["log"] = response["log"]
@@ -93,7 +97,16 @@ class Server {
             showLogs(false)
           }
           return
-        
+
+        case "showInfo":
+          return
+        case "showDebug":
+          return
+        case "showError":
+          return
+        case "showWarning":
+          return
+
         default:
           SERVER = new Object()
           SERVER = response
@@ -119,9 +132,9 @@ class Server {
       createLayout()
 
     }
-  
+
   }
-  
+
 }
 
 function getCookie(name) {

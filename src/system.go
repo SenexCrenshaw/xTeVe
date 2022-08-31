@@ -55,8 +55,9 @@ func createSystemFiles() (err error) {
 		var filename = getPlatformFile(System.Folder.Config + file)
 
 		err = checkFile(filename)
-		if err != nil {
+		if err != nil && file != "tvlogos.json" {
 			// File does not exist, will be created now
+			// We don't want to create the tvlogos.json file here, it is handled elsewhere
 			err = saveMapToJSONFile(filename, make(map[string]interface{}))
 			if err != nil {
 				return
@@ -65,6 +66,8 @@ func createSystemFiles() (err error) {
 			debug = fmt.Sprintf("Create File:%s", filename)
 			showDebug(debug, 1)
 
+		} else if file == "tvlogos.json" && err != nil {
+			err = nil
 		}
 
 		switch file {
@@ -79,7 +82,8 @@ func createSystemFiles() (err error) {
 			System.File.XEPG = filename
 		case "urls.json":
 			System.File.URLS = filename
-
+		case "tvlogos.json":
+			System.File.TVLogos = filename
 		}
 
 	}
@@ -118,6 +122,8 @@ func loadSettings() (settings SettingsStruct, err error) {
 	defaults["clearXMLTVCache"] = false
 	defaults["defaultMissingEPG"] = "-"
 	defaults["disallowURLDuplicates"] = false
+	defaults["enableTapiosinnTVLogos"] = true
+	defaults["LogosCountry"] = ""
 	defaults["enableMappedChannels"] = false
 	defaults["epgSource"] = "PMS"
 	defaults["ffmpeg.options"] = System.FFmpeg.DefaultOptions

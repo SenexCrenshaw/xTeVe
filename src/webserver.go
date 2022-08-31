@@ -2,6 +2,7 @@ package src
 
 import (
 	"context"
+	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -29,6 +30,7 @@ func StartWebserver() (err error) {
 	http.HandleFunc("/stream/", Stream)
 	http.HandleFunc("/xmltv/", xTeVe)
 	http.HandleFunc("/m3u/", xTeVe)
+	http.HandleFunc("/m3udownload/", xTeVe)
 	http.HandleFunc("/data/", WS)
 	http.HandleFunc("/web/", Web)
 	http.HandleFunc("/download/", Download)
@@ -109,7 +111,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	var path = r.URL.Path
 	var debug string
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
+	} else {
+		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
+	}
 
 	debug = fmt.Sprintf("Web Server Request:Path: %s", path)
 	showDebug(debug, 2)
@@ -264,13 +270,31 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 	var path = strings.TrimPrefix(r.URL.Path, "/")
 	var groups = []string{}
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
+	} else {
+		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
+	}
 
 	// XMLTV File
 	if strings.Contains(path, "xmltv/") {
 
 		requestType = "xml"
 
+		file = System.Folder.Data + getFilenameFromPath(path)
+
+		content, err = readStringFromFile(file)
+		if err != nil {
+			httpStatusError(w, r, 404)
+			return
+		}
+
+	}
+
+	// M3U Download File
+	if strings.Contains(path, "m3udownload/") {
+
+		requestType = "m3u"
 		file = System.Folder.Data + getFilenameFromPath(path)
 
 		content, err = readStringFromFile(file)
@@ -388,7 +412,11 @@ func WS(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
+	} else {
+		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
+	}
 
 	for {
 
@@ -462,6 +490,8 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		case "saveSettings":
 			var authenticationUpdate = Settings.AuthenticationWEB
 			var previousTLSMode = Settings.TLSMode
+			var previousTvLogos = Settings.EnableTapiosinnTVLogos
+			var previousLogosCountry = Settings.LogosCountry
 			var previousHostIP = Settings.HostIP
 			var previousHostName = Settings.HostName
 			var previousStoreBufferInRAM = Settings.StoreBufferInRAM
@@ -483,6 +513,22 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 					response.OpenLink = System.URLBase + "/web/"
 					restartWebserver <- true
+				}
+
+				if Settings.EnableTapiosinnTVLogos != previousTvLogos || (Settings.EnableTapiosinnTVLogos && previousLogosCountry != Settings.LogosCountry) {
+					showInfo("Web server:Toggling use of Tapiosinn TV Logos")
+					if Settings.EnableTapiosinnTVLogos {
+						go func() {
+							downloadLogoJSON()
+
+						}()
+					}
+					response.Tvlogos = Data.Logos
+				} else {
+					response.Tvlogos = LogosStruct{
+						URL:             "",
+						LogoInformation: []LogoInformation{},
+					}
 				}
 
 				if Settings.HostIP != previousHostIP {
@@ -577,6 +623,18 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			WebScreenLog.Warnings = 0
 			response.OpenMenu = strconv.Itoa(lo.IndexOf(System.WEB.Menu, "log"))
 
+		case "showInfo":
+			showInfo("WEB:" + request.LogMsg)
+
+		case "showDebug":
+			showDebug("WEB:"+request.LogMsg, request.LogLevel)
+
+		case "showWarning":
+			showWarningFromWeb("WEB:" + request.LogMsg)
+
+		case "showError":
+			ShowErrorFromWeb("WEB:" + request.LogMsg)
+
 		case "xteveBackup":
 			file, errNew := xteveBackup()
 			err = errNew
@@ -626,6 +684,38 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 			}
 
+		case "uploadM3U":
+			if len(request.Base64) > 0 {
+				response.M3UURL, err = uploadM3U(request.Base64, request.Filename)
+
+				if err == nil {
+
+					if err = conn.WriteJSON(response); err != nil {
+						ShowError(err, 1022)
+					} else {
+						return
+					}
+
+				}
+
+			}
+
+		case "uploadXML":
+			if len(request.Base64) > 0 {
+				response.XMLURL, err = uploadXML(request.Base64, request.Filename)
+
+				if err == nil {
+
+					if err = conn.WriteJSON(response); err != nil {
+						ShowError(err, 1022)
+					} else {
+						return
+					}
+
+				}
+
+			}
+
 		case "saveWizard":
 			nextStep, errNew := saveWizard(request)
 
@@ -644,6 +734,15 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		// case "wizardCompleted":
 		// 	System.ConfigurationWizard = false
 		// 	response.Reload = true
+		case "updateLogos":
+			if len(Data.Logos.LogoInformation) > 0 {
+				response.Tvlogos = Data.Logos
+			} else {
+				response.Tvlogos = LogosStruct{
+					URL:             "",
+					LogoInformation: []LogoInformation{},
+				}
+			}
 
 		default:
 			fmt.Println("+ + + + + + + + + + +", request.Cmd)
@@ -677,6 +776,48 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func uploadM3U(input, filename string) (m3uURL string, err error) {
+
+	b64data := input[strings.IndexByte(input, ',')+1:]
+
+	// Convert Base64 into bytes and save
+	sDec, err := b64.StdEncoding.DecodeString(b64data)
+	if err != nil {
+		return
+	}
+
+	err = writeByteToFile(System.File.M3UUploaded, sDec)
+	if err != nil {
+		return
+	}
+
+	m3uURL = System.File.M3UUploaded
+
+	return
+
+}
+
+func uploadXML(input, filename string) (xmlURL string, err error) {
+
+	b64data := input[strings.IndexByte(input, ',')+1:]
+
+	// Convert Base64 into bytes and save
+	sDec, err := b64.StdEncoding.DecodeString(b64data)
+	if err != nil {
+		return
+	}
+
+	err = writeByteToFile(System.File.XMLUploaded, sDec)
+	if err != nil {
+		return
+	}
+
+	xmlURL = System.File.XMLUploaded
+
+	return
+
+}
+
 // Web : Web Server /web/
 func Web(w http.ResponseWriter, r *http.Request) {
 
@@ -688,7 +829,11 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	var language LanguageUI
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
+	} else {
+		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
+	}
 
 	if System.Dev {
 
@@ -720,6 +865,8 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 			if len(Settings.Files.M3U) == 0 && len(Settings.Files.HDHR) == 0 {
 				System.ConfigurationWizard = true
+			} else {
+				System.ConfigurationWizard = false
 			}
 
 		}
@@ -917,7 +1064,11 @@ func API(w http.ResponseWriter, r *http.Request) {
 			}
 	*/
 
-	setGlobalDomain(r.Host)
+	if Settings.HostName != "" {
+		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
+	} else {
+		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
+	}
 	var request APIRequestStruct
 	var response APIResponseStruct
 
@@ -1110,7 +1261,6 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 	if data {
 
 		defaults.Users, _ = authentication.GetAllUserData()
-		//defaults.DVR = System.DVRAddress
 
 		if Settings.EpgSource == "XEPG" {
 
@@ -1132,6 +1282,23 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 			defaults.XEPG = XEPG
 
+		}
+
+		if Settings.EnableTapiosinnTVLogos {
+
+			var tvLogos LogosStruct
+
+			if len(Data.Logos.LogoInformation) > 0 {
+				tvLogos = Data.Logos
+			}
+
+			defaults.Tvlogos = tvLogos
+
+		} else {
+			defaults.Tvlogos = LogosStruct{
+				URL:             "",
+				LogoInformation: []LogoInformation{},
+			}
 		}
 
 		defaults.Settings = Settings

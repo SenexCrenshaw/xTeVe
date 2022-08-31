@@ -106,6 +106,34 @@ func showHighlight(str string) {
 
 }
 
+func showWarningFromWeb(str string) {
+
+	var max = 23
+	var msg = strings.SplitN(str, ":", 2)
+	var length = len(msg[0])
+	var space string
+
+	if len(msg) == 2 {
+
+		for i := length; i < max; i++ {
+			space = space + " "
+		}
+
+		msg[0] = msg[0] + ":" + space
+
+		var logMsg = fmt.Sprintf("[%s] [WARNING] %s%s", System.Name, msg[0], msg[1])
+
+		printLogOnScreen(logMsg, "warning")
+
+		logMsg = strings.Replace(logMsg, " ", "&nbsp;", -1)
+		WebScreenLog.Log = append(WebScreenLog.Log, time.Now().Format("2006-01-02 15:04:05")+" "+logMsg)
+		WebScreenLog.Warnings++
+		logCleanUp()
+
+	}
+
+}
+
 func showWarning(errCode int) {
 
 	var errMsg = getErrMsg(errCode)
@@ -118,6 +146,35 @@ func showWarning(errCode int) {
 	WebScreenLog.Log = append(WebScreenLog.Log, time.Now().Format("2006-01-02 15:04:05")+" "+logMsg)
 	WebScreenLog.Warnings++
 	mutex.Unlock()
+
+}
+
+func ShowErrorFromWeb(str string) {
+
+	var max = 23
+	var msg = strings.SplitN(str, ":", 2)
+	var length = len(msg[0])
+	var space string
+	var mutex = sync.RWMutex{}
+
+	if len(msg) == 2 {
+
+		for i := length; i < max; i++ {
+			space = space + " "
+		}
+		msg[0] = msg[0] + ":" + space
+
+		var logMsg = fmt.Sprintf("[%s] [ERROR] %s%s", System.Name, msg[0], msg[1])
+
+		printLogOnScreen(logMsg, "error")
+		logMsg = strings.Replace(logMsg, " ", "&nbsp;", -1)
+
+		mutex.Lock()
+		WebScreenLog.Log = append(WebScreenLog.Log, time.Now().Format("2006-01-02 15:04:05")+" "+logMsg)
+		WebScreenLog.Errors++
+		mutex.Unlock()
+
+	}
 
 }
 
