@@ -7,10 +7,6 @@
 
 ## M3U Proxy and EPG aggregator for Plex DVR and Emby Live TV
 
-### This is a fork of <https://github.com/xteve-project/xTeVe>, all credit goes to the original author
-
-Documentation for setup and configuration is [here](https://github.com/xteve-project/xTeVe-Documentation/blob/main/en/configuration.md).
-
 ---
 
 ## Features
@@ -270,3 +266,9 @@ var GitHub = GitHubStruct{Branch: "main", User: "senexcrenshaw", Repo: "xTeVe", 
 // Repo:   GitHub Repository
 // Update: Automatic updates from the GitHub repository [true|false]
 ```
+
+---
+
+### This is a fork of <https://github.com/xteve-project/xTeVe>
+
+Documentation for setup and configuration is [here](https://github.com/xteve-project/xTeVe-Documentation/blob/main/en/configuration.md).
