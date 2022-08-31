@@ -24,7 +24,7 @@ FROM alpine:latest
 ARG BUILD_DATE
 ARG VCS_REF
 ARG XTEVE_PORT=34400
-ARG XTEVE_VERSION=2.5.1
+ARG XTEVE_VERSION=2.5.2
 
 LABEL org.opencontainers.image.created="{$BUILD_DATE}" \
       org.opencontainers.image.url="https://hub.docker.com/r/SenexCrenshaw/xteve/" \
