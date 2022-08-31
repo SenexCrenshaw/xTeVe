@@ -1186,6 +1186,7 @@ function openPopUp(dataType, element) {
       var dbKey: string = "file.source"
       var input = content.createInput("text", dbKey, data[dbKey])
       input.setAttribute("placeholder", "{{.playlist.fileM3U.placeholder}}")
+      input.id = dataType
       content.appendRow("{{.playlist.fileM3U.title}}", input)
 
       var m3uinput = content.createInput("button", "cancel", "{{.button.uploadM3U}}")
@@ -1501,6 +1502,7 @@ function openPopUp(dataType, element) {
       // URL
       var dbKey: string = "file.source"
       var input = content.createInput("text", dbKey, data[dbKey])
+      input.id = dataType
       input.setAttribute("placeholder", "{{.xmltv.fileXMLTV.placeholder}}")
       content.appendRow("{{.xmltv.fileXMLTV.title}}", input)
 

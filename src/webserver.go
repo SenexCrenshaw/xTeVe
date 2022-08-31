@@ -791,7 +791,7 @@ func uploadM3U(input, filename string) (m3uURL string, err error) {
 		return
 	}
 
-	m3uURL = System.ServerProtocol.M3U + "://" + System.Domain + "/m3udownload/xteve_uploaded.m3u"
+	m3uURL = System.File.M3UUploaded
 
 	return
 
@@ -812,7 +812,7 @@ func uploadXML(input, filename string) (xmlURL string, err error) {
 		return
 	}
 
-	xmlURL = System.ServerProtocol.M3U + "://" + System.Domain + "/xmltv/xteve_uploaded.xml"
+	xmlURL = System.File.XMLUploaded
 
 	return
 

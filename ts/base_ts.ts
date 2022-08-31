@@ -587,7 +587,8 @@ function uploadM3U() {
   upload.setAttribute("type", "file")
   upload.setAttribute("class", "notVisible")
   upload.setAttribute("name", "")
-  upload.id = "upload"
+  upload.setAttribute("accept", ".m3u,.m3u.gz")
+  upload.id = "m3uupload"
 
   document.body.appendChild(upload)
   upload.click()
@@ -598,7 +599,6 @@ function uploadM3U() {
 
   upload.onchange = function () {
     var input = this as HTMLInputElement
-    var filename = (upload as HTMLInputElement).files[0].name
 
     var reader = new FileReader()
     var file = input.files[0]
@@ -631,7 +631,9 @@ function uploadXML() {
   upload.setAttribute("type", "file")
   upload.setAttribute("class", "notVisible")
   upload.setAttribute("name", "")
-  upload.id = "upload"
+  upload.setAttribute("accept", ".xml,.xml.gz")
+
+  upload.id = "xmlupload"
 
   document.body.appendChild(upload)
   upload.click()
