@@ -1,4 +1,4 @@
-name: xTeVe manual publish
+name: xTeVe release manual
 on:
   workflow_dispatch:
  
@@ -45,4 +45,3 @@ jobs:
         binary_name: xteve
         build_flags: -v
         ldflags: -X "main.appVersion=${{ steps.xteve_version.outputs.prop }}" -X "main.buildTime=${{ env.BUILD_TIME }}" -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
-

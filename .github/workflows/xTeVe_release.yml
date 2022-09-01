@@ -1,4 +1,4 @@
-name: xTeVe release manual
+name: xTeVe Release
 on:
   workflow_dispatch:
   release:
