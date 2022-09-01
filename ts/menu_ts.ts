@@ -426,6 +426,7 @@ class Content {
           cell.childType = "IMG"
           cell.value = data[key]["x-name"]
           cell.imageURL = data[key]["tvg-logo"]
+          cell.id = "cell" + key
           var td = cell.createCell()
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
           td.id = key
@@ -438,6 +439,7 @@ class Content {
           cell.childType = "P"
           cell.className = data[key]["x-category"]
           cell.value = data[key]["x-name"]
+          cell.id = "cell" + key
           var td = cell.createCell()
           td.setAttribute('onclick', 'javascript: openPopUp("mapping", this)')
           td.id = key
@@ -544,6 +546,7 @@ class Cell {
   imageURL: string
   onclick: boolean
   onclickFunction: string
+  id: string
 
   createCell(): any {
     let td = document.createElement("TD")
@@ -557,6 +560,7 @@ class Cell {
           element = document.createElement(this.childType);
           element.innerHTML = this.value
           element.className = this.className
+          element.id = this.id
           break
 
         case "INPUT":
@@ -590,15 +594,21 @@ class Cell {
         case "IMG":
           element = document.createElement(this.childType);
           element.setAttribute("alt", this.value);
-          element.onerror = function () {
+          element.setAttribute("channelID", this.id)
+
+          element.onerror = function (this: HTMLImageElement) {
             showWarning(this.alt + " has a bad logo URL")
+            var channelNameID = this.attributes["channelID"].value;
+            document.getElementById(channelNameID).style.color = "red";
             this.src = getDefaultLogo()
-            this.onerror = null
           };
-          if (this.imageURL === "") {
+
+          if (!this.imageURL) {
             this.imageURL = getDefaultLogo()
           }
+
           element.setAttribute("src", this.imageURL)
+
       }
 
       td.appendChild(element)
@@ -619,8 +629,9 @@ class Cell {
     return td
   }
 
-  return
+
 }
+
 
 class ShowContent extends Content {
   menuID: number
@@ -712,6 +723,19 @@ class ShowContent extends Content {
         label.setAttribute("for", "shiftChannel")
         label.setAttribute("class", "shiftChannelLabel")
         label.innerHTML = "{{.checkbox.shiftChannel.label}}"
+        interaction.appendChild(label)
+
+        var input = this.createInput("checkbox", menuKey, "")
+        input.setAttribute("id", "badChannels")
+        input.checked = false
+        input.setAttribute("title", "{{.checkbox.badLogos.title}}")
+        input.setAttribute("onchange", 'javascript: searchBadLogos(this.checked)')
+        interaction.appendChild(input)
+
+        var label = document.createElement("label")
+        label.setAttribute("for", "badLogos")
+        label.setAttribute("class", "shiftChannelLabel")
+        label.innerHTML = "{{.checkbox.badLogos.label}}"
         interaction.appendChild(label)
 
         var input = this.createInput("search", "search", "")
@@ -1690,7 +1714,7 @@ function openPopUp(dataType, element) {
         currentLogoUrl = data[dbKey]
         var input = content.createInput("text", dbKey, data[dbKey])
         input.setAttribute("onchange", "javascript: this.className = 'changed'; previewChannelLogo(this.value)")
-        input.setAttribute("id", "channel-icon")
+        input.setAttribute("id", "station-logo-picker-input")
         content.appendRow("{{.mapping.channelLogo.title}}", input)
       }
 
@@ -1703,10 +1727,14 @@ function openPopUp(dataType, element) {
 
       // Channel logo update
       var dbKey: string = "x-update-channel-icon"
-      var input = content.createCheckbox(dbKey)
-      input.checked = data[dbKey]
+      if (BULK_EDIT) {
+        var input = content.createCheckbox(dbKey)
+        input.checked = data[dbKey]
+      } else {
+        var input = content.createInput("button", "Use M3U Logo", "Use M3U Logo")
+      }
       input.setAttribute("id", "update-icon")
-      input.setAttribute("onchange", "javascript: this.className = 'changed'; changeChannelLogo('" + id + "');")
+      input.setAttribute("onclick", "javascript: this.className = 'changed'; changeChannelLogo('" + id + "');")
       content.appendRow("{{.mapping.updateChannelLogo.title}}", input)
 
       // Expand EPG category
@@ -2004,7 +2032,7 @@ function changeChannelLogo(epgMapId: string) {
   const xmlTvIdInput = document.getElementById('xmltv-id-picker-input') as HTMLInputElement;
   const newXmlTvId = xmlTvIdInput.value;
 
-  const updateLogo = (document.getElementById('update-icon') as HTMLInputElement).checked;
+  const updateLogo = !BULK_EDIT || (document.getElementById('update-icon') as HTMLInputElement).checked;
 
   let logo: string;
 
@@ -2016,7 +2044,7 @@ function changeChannelLogo(epgMapId: string) {
       logo = channel['tvg-logo'];
     }
 
-    var logoInput = (document.getElementById('channel-icon') as HTMLInputElement);
+    var logoInput = (document.getElementById('station-logo-picker-input') as HTMLInputElement);
     logoInput.value = logo;
 
     if (BULK_EDIT == false) {
@@ -2278,7 +2306,14 @@ function donePopupData(dataType: string, idsStr: string) {
 
 
         case "tvg-logo":
-          //(document.getElementById(id).childNodes[2].firstChild as HTMLElement).setAttribute("src", value)
+          let element = (document.getElementById(id).childNodes[3].firstChild as HTMLElement)
+          if (!ImageExist(input["tvg-logo"])) {
+            element.style.color = "red";
+            showWarning(element.innerText + " has a bad logo URL")
+            input["tvg-logo"] = getDefaultLogo()
+          } else {
+            element.style.color = "white";
+          }
           break
 
         case "x-name":
@@ -2343,7 +2378,9 @@ function donePopupData(dataType: string, idsStr: string) {
   });
 
   showElement("popup", false);
-
+  if ((document.getElementById("badChannels") as HTMLInputElement).checked) {
+    searchBadLogos(true)
+  }
   return
 }
 

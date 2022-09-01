@@ -40,7 +40,6 @@ type SystemStruct struct {
 	File struct {
 		Authentication    string
 		M3U               string
-		M3UUploaded       string
 		PMS               string
 		ServerCert        string
 		ServerCertPrivKey string
@@ -48,7 +47,6 @@ type SystemStruct struct {
 		URLS              string
 		XEPG              string
 		XML               string
-		XMLUploaded       string
 		TVLogos           string
 	}
 

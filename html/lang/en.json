@@ -54,6 +54,10 @@
     "shiftChannel": {
       "label": "Shift Channels",
       "title": "Shift existing channels up by 1 channel number if moving a channel to an already used channel number"
+    },
+    "badLogos": {
+      "label": "Show Bad Logos",
+      "title": ""
     }
   },
   "filter": {
