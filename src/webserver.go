@@ -9,10 +9,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
-
 	"xteve/src/internal/authentication"
 
 	"github.com/gorilla/websocket"
@@ -776,6 +776,12 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 }
 
+var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9-. ]+`)
+
+func clearString(str string) string {
+	return nonAlphanumericRegex.ReplaceAllString(str, "")
+}
+
 func uploadM3U(input, filename string) (m3uURL string, err error) {
 
 	b64data := input[strings.IndexByte(input, ',')+1:]
@@ -786,12 +792,18 @@ func uploadM3U(input, filename string) (m3uURL string, err error) {
 		return
 	}
 
-	err = writeByteToFile(System.File.M3UUploaded, sDec)
+	filename = clearString(filename)
+
+	if strings.HasSuffix(filename, ".m3u") {
+		m3uURL = getPlatformFile(fmt.Sprintf("%s%s", System.Folder.Data, filename))
+	} else {
+		m3uURL = getPlatformFile(fmt.Sprintf("%s%s.m3u", System.Folder.Data, filename))
+	}
+
+	err = writeByteToFile(m3uURL, sDec)
 	if err != nil {
 		return
 	}
-
-	m3uURL = System.File.M3UUploaded
 
 	return
 
@@ -807,12 +819,18 @@ func uploadXML(input, filename string) (xmlURL string, err error) {
 		return
 	}
 
-	err = writeByteToFile(System.File.XMLUploaded, sDec)
+	filename = clearString(filename)
+
+	if strings.HasSuffix(filename, ".xml") {
+		xmlURL = getPlatformFile(fmt.Sprintf("%s%s", System.Folder.Data, filename))
+	} else {
+		xmlURL = getPlatformFile(fmt.Sprintf("%s%s.xml", System.Folder.Data, filename))
+	}
+
+	err = writeByteToFile(xmlURL, sDec)
 	if err != nil {
 		return
 	}
-
-	xmlURL = System.File.XMLUploaded
 
 	return
 
