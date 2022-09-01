@@ -2378,7 +2378,9 @@ function donePopupData(dataType: string, idsStr: string) {
   });
 
   showElement("popup", false);
-
+  if ((document.getElementById("badChannels") as HTMLInputElement).checked) {
+    searchBadLogos(true)
+  }
   return
 }
 
