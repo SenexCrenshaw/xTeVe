@@ -330,6 +330,26 @@ function createSearchObj() {
   return
 }
 
+
+function searchBadLogos(isChecked: boolean) {
+
+  var trs = document.getElementById("content_table").getElementsByTagName("TR")
+
+  for (var i = 1; i < trs.length; ++i) {
+    let element = (trs[i] as HTMLElement)
+    let nameElement = (trs[i].childNodes[3].firstChild as HTMLElement)
+
+    if (!isChecked || nameElement.style.color === "red") {
+      element.style.display = ""
+    } else {
+      element.style.display = "none"
+    }
+
+  }
+
+  return
+}
+
 function searchInMapping() {
 
   var searchValue = (document.getElementById("searchMapping") as HTMLInputElement).value

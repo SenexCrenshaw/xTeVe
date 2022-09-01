@@ -594,18 +594,21 @@ class Cell {
         case "IMG":
           element = document.createElement(this.childType);
           element.setAttribute("alt", this.value);
-          element.setAttribute("longdesc", this.id)
-          element.onerror = function () {
+          element.setAttribute("channelID", this.id)
+
+          element.onerror = function (this: HTMLImageElement) {
             showWarning(this.alt + " has a bad logo URL")
-            var channelNameID = (this as HTMLImageElement).attributes["longdesc"].value;
+            var channelNameID = this.attributes["channelID"].value;
             document.getElementById(channelNameID).style.color = "red";
             this.src = getDefaultLogo()
-            this.onerror = null
           };
-          if (this.imageURL === "") {
+
+          if (!this.imageURL) {
             this.imageURL = getDefaultLogo()
           }
+
           element.setAttribute("src", this.imageURL)
+
       }
 
       td.appendChild(element)
@@ -720,6 +723,19 @@ class ShowContent extends Content {
         label.setAttribute("for", "shiftChannel")
         label.setAttribute("class", "shiftChannelLabel")
         label.innerHTML = "{{.checkbox.shiftChannel.label}}"
+        interaction.appendChild(label)
+
+        var input = this.createInput("checkbox", menuKey, "")
+        input.setAttribute("id", "badChannels")
+        input.checked = false
+        input.setAttribute("title", "{{.checkbox.badLogos.title}}")
+        input.setAttribute("onchange", 'javascript: searchBadLogos(this.checked)')
+        interaction.appendChild(input)
+
+        var label = document.createElement("label")
+        label.setAttribute("for", "badLogos")
+        label.setAttribute("class", "shiftChannelLabel")
+        label.innerHTML = "{{.checkbox.badLogos.label}}"
         interaction.appendChild(label)
 
         var input = this.createInput("search", "search", "")
@@ -2290,7 +2306,14 @@ function donePopupData(dataType: string, idsStr: string) {
 
 
         case "tvg-logo":
-          //(document.getElementById(id).childNodes[2].firstChild as HTMLElement).setAttribute("src", value)
+          let element = (document.getElementById(id).childNodes[3].firstChild as HTMLElement)
+          if (!ImageExist(input["tvg-logo"])) {
+            element.style.color = "red";
+            showWarning(element.innerText + " has a bad logo URL")
+            input["tvg-logo"] = getDefaultLogo()
+          } else {
+            element.style.color = "white";
+          }
           break
 
         case "x-name":
