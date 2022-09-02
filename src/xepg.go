@@ -238,7 +238,7 @@ func createXEPGMapping() {
 
 // Create / update XEPG Database
 func createXEPGDatabase() (err error) {
-
+	var firstFreeNumber float64 = Settings.MappingFirstChannel
 	var allChannelNumbers = make([]float64, 0)
 	Data.Cache.Streams.Active = make([]string, 0)
 	Data.XEPG.Channels = make(map[string]interface{})
@@ -268,7 +268,6 @@ func createXEPGDatabase() (err error) {
 
 		sort.Float64s(allChannelNumbers)
 
-		var firstFreeNumber float64 = Settings.MappingFirstChannel
 		if startingChannel != nil {
 			var startingChannel, _ = strconv.ParseFloat(startingChannel[0], 64)
 			if startingChannel > 0 {
@@ -328,8 +327,15 @@ func createXEPGDatabase() (err error) {
 		xepgChannelsValuesMap[channelHash] = channel
 	}
 
+	start := time.Now()
+	count := 0
+	total := len(Data.Streams.Active)
 	for _, dsa := range Data.Streams.Active {
-
+		count += 1
+		if count%1000 == 0 {
+			fmt.Printf("Processed %v/%v streams in %v\n", count, total, time.Since(start))
+			start = time.Now()
+		}
 		var channelExists = false  // Decides whether a Channel should be added to the Database
 		var channelHasUUID = false // Checks whether the Channel (Stream) has Unique IDs
 		var currentXEPGID string   // Current Database ID (XEPG) Used to update the Channel in the Database with the Stream of the M3U
