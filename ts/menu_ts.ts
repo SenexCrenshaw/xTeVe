@@ -594,11 +594,18 @@ class Cell {
         case "IMG":
           element = document.createElement(this.childType);
           element.setAttribute("alt", this.value);
+<<<<<<< HEAD
           element.setAttribute("channelID", this.id)
 
           element.onerror = function (this: HTMLImageElement) {
             showWarning(this.alt + " has a bad logo URL")
             var channelNameID = this.attributes["channelID"].value;
+=======
+          element.setAttribute("longdesc", this.id)
+          element.onerror = function () {
+            showWarning(this.alt + " has a bad logo URL")
+            var channelNameID = (this as HTMLImageElement).attributes["longdesc"].value;
+>>>>>>> a9f55a1 (Fix Use M3U logo)
             document.getElementById(channelNameID).style.color = "red";
             this.src = getDefaultLogo()
           };
