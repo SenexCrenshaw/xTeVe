@@ -594,11 +594,12 @@ class Cell {
         case "IMG":
           element = document.createElement(this.childType);
           element.setAttribute("alt", this.value);
+
           element.setAttribute("channelID", this.id)
 
           element.onerror = function (this: HTMLImageElement) {
-            showWarning(this.alt + " has a bad logo URL")
             var channelNameID = this.attributes["channelID"].value;
+
             document.getElementById(channelNameID).style.color = "red";
             this.src = getDefaultLogo()
           };
@@ -2309,7 +2310,6 @@ function donePopupData(dataType: string, idsStr: string) {
           let element = (document.getElementById(id).childNodes[3].firstChild as HTMLElement)
           if (!ImageExist(input["tvg-logo"])) {
             element.style.color = "red";
-            showWarning(element.innerText + " has a bad logo URL")
             input["tvg-logo"] = getDefaultLogo()
           } else {
             element.style.color = "white";

@@ -111,11 +111,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	var path = r.URL.Path
 	var debug string
 
-	if Settings.HostName != "" {
-		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
-	} else {
-		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
-	}
+	setGlobalDomain()
 
 	debug = fmt.Sprintf("Web Server Request:Path: %s", path)
 	showDebug(debug, 2)
@@ -270,11 +266,7 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 	var path = strings.TrimPrefix(r.URL.Path, "/")
 	var groups = []string{}
 
-	if Settings.HostName != "" {
-		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
-	} else {
-		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
-	}
+	setGlobalDomain()
 
 	// XMLTV File
 	if strings.Contains(path, "xmltv/") {
@@ -412,11 +404,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	if Settings.HostName != "" {
-		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
-	} else {
-		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
-	}
+	setGlobalDomain()
 
 	for {
 
@@ -494,6 +482,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			var previousLogosCountry = Settings.LogosCountry
 			var previousHostIP = Settings.HostIP
 			var previousHostName = Settings.HostName
+			var previousUsePort = Settings.UsePort
 			var previousStoreBufferInRAM = Settings.StoreBufferInRAM
 			var previousClearXMLTVCache = Settings.ClearXMLTVCache
 
@@ -548,6 +537,16 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 					response.OpenLink = System.URLBase + "/web/"
 					restartWebserver <- true
+				}
+
+				if Settings.UsePort != previousUsePort {
+					Settings.HostIP = previousHostName
+					//showInfo("Web server:" + fmt.Sprintf("Changing host name to %s", Settings.UsePort))
+
+					reinitialize()
+
+					// response.OpenLink = System.URLBase + "/web/"
+					// restartWebserver <- true
 				}
 
 				if Settings.StoreBufferInRAM != previousStoreBufferInRAM {
@@ -847,11 +846,7 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	var language LanguageUI
 
-	if Settings.HostName != "" {
-		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
-	} else {
-		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
-	}
+	setGlobalDomain()
 
 	if System.Dev {
 
@@ -1082,11 +1077,8 @@ func API(w http.ResponseWriter, r *http.Request) {
 			}
 	*/
 
-	if Settings.HostName != "" {
-		setGlobalDomain(Settings.HostName + ":" + Settings.Port)
-	} else {
-		setGlobalDomain(Settings.HostIP + ":" + Settings.Port)
-	}
+	setGlobalDomain()
+
 	var request APIRequestStruct
 	var response APIResponseStruct
 

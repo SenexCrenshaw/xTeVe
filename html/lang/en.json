@@ -381,6 +381,10 @@
       "title": "Host Name Override",
       "description": "Hostname xTeVe will use to form M3U and XMLTV files. This will override Host IP if set"
     },
+    "usePort": {
+      "title": "Use Port in M3U File",
+      "description": "Use xTeVe port in M3U URL. Disable (most likely) for reverse proxies"
+    },
     "tlsMode": {
       "title": "TLS (HTTPS) mode",
       "description": "Changes web server protocol to HTTPS.<br>For details, see <a href='https://github.com/SenexCrenshaw/xTeVe#tls-mode' target='_blank'>https://github.com/SenexCrenshaw/xTeVe#tls-mode</a>"
