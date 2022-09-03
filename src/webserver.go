@@ -541,12 +541,9 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 				if Settings.UsePort != previousUsePort {
 					Settings.HostIP = previousHostName
-					//showInfo("Web server:" + fmt.Sprintf("Changing host name to %s", Settings.UsePort))
+					showInfo("Web server:" + fmt.Sprintf("Use Port changed to %v, reinitializing", Settings.UsePort))
 
 					reinitialize()
-
-					// response.OpenLink = System.URLBase + "/web/"
-					// restartWebserver <- true
 				}
 
 				if Settings.StoreBufferInRAM != previousStoreBufferInRAM {
