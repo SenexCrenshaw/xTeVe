@@ -1,0 +1,47 @@
+name: xTeVe release manual
+on:
+  workflow_dispatch:
+ 
+permissions:
+  contents: read
+
+jobs:
+  build_xteve_and_publish:
+    permissions:
+      contents: write
+    name: build_xteve
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/386, linux/amd64, linux/arm64, windows/386, windows/amd64, darwin/amd64, darwin/arm64
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64, arm64]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Read version from release.json
+      uses: notiz-dev/github-action-json-property@release
+      id: xteve_version
+      with:
+        path: 'release.json'
+        prop_path: 'version'     
+    
+    - name: Set BUILD_TIME env
+      run: echo BUILD_TIME=$(date -u +%Y%m%d-%H%M) >> ${GITHUB_ENV}
+
+    - uses: wangyoucao577/go-release-action@v1.30
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        overwrite: true
+        extra_files: LICENSE README.md
+        release_tag: v${{steps.xteve_version.outputs.prop}}
+        binary_name: xteve
+        build_flags: -v
+        ldflags: -X "main.appVersion=${{ steps.xteve_version.outputs.prop }}" -X "main.buildTime=${{ env.BUILD_TIME }}" -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
