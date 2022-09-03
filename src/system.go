@@ -133,6 +133,7 @@ func loadSettings() (settings SettingsStruct, err error) {
 	defaults["git.branch"] = System.Branch
 	defaults["hostIP"] = "" // Will be set in resolveHostIP()
 	defaults["hostName"] = ""
+	defaults["usePort"] = true
 	defaults["language"] = "en"
 	defaults["log.entries.ram"] = 500
 	defaults["m3u8.adaptive.bandwidth.mbps"] = 10
@@ -235,7 +236,24 @@ func saveSettings(settings SettingsStruct) (err error) {
 }
 
 // Enable access via the Domain
-func setGlobalDomain(domain string) {
+func getGlobalDomain() (domain string) {
+	if Settings.HostName != "" {
+		domain = Settings.HostName
+	} else {
+		domain = Settings.HostIP
+	}
+	if Settings.UsePort {
+		domain = fmt.Sprintf("%s:%s", domain, Settings.Port)
+	}
+	return domain
+}
+
+func setGlobalDomain() {
+	setGlobalDomainWithDomain(getGlobalDomain())
+}
+
+// Enable access via the Domain
+func setGlobalDomainWithDomain(domain string) {
 
 	System.Domain = domain
 

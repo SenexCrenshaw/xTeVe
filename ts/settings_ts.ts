@@ -422,6 +422,21 @@ class SettingsCategory {
         setting.appendChild(tdLeft);
         setting.appendChild(tdRight);
         break;
+
+      case "usePort":
+        var tdLeft = document.createElement("TD")
+        tdLeft.innerHTML = "{{.settings.usePort.title}}" + ":"
+
+        var tdRight = document.createElement("TD")
+        var input = content.createCheckbox(settingsKey)
+        input.checked = data
+        input.setAttribute("onchange", "javascript: this.className = 'changed'")
+        tdRight.appendChild(input)
+
+        setting.appendChild(tdLeft)
+        setting.appendChild(tdRight)
+        break
+
       case "tuner":
         var tdLeft = document.createElement("TD")
         tdLeft.innerHTML = "{{.settings.tuner.title}}" + ":"
@@ -653,6 +668,10 @@ class SettingsCategory {
 
       case "hostName":
         text = "{{.settings.hostName.description}}"
+        break;
+
+      case "usePort":
+        text = "{{.settings.usePort.description}}"
         break;
 
       case "tuner":

@@ -205,7 +205,7 @@ func Init() (err error) {
 	}
 
 	// Set Domain Names
-	setGlobalDomain(fmt.Sprintf("%s:%s", Settings.HostIP, Settings.Port))
+	setGlobalDomain()
 
 	System.URLBase = fmt.Sprintf("%s://%s:%s", System.ServerProtocol.WEB, Settings.HostIP, Settings.Port)
 
