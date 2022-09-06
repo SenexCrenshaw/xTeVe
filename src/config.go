@@ -52,6 +52,7 @@ func Init() (err error) {
 	System.ServerProtocol.WEB = "http"
 	System.ServerProtocol.XML = "http"
 	System.PlexChannelLimit = 480
+	System.UnfilteredChannelLimit = 2000
 	System.Compatibility = "1.4.4"
 
 	// FFmpeg Default Settings
@@ -246,6 +247,7 @@ func StartSystem(updateProviderFiles bool) (err error) {
 	showInfo(fmt.Sprintf("Tuner (Plex / Emby):%d", Settings.Tuner))
 	showInfo(fmt.Sprintf("EPG Source:%s", Settings.EpgSource))
 	showInfo(fmt.Sprintf("Plex Channel Limit:%d", System.PlexChannelLimit))
+	showInfo(fmt.Sprintf("Unfiltered Chan. Limit:%d", System.UnfilteredChannelLimit))
 
 	// Update Provider Data
 	if len(Settings.Files.M3U) > 0 && Settings.FilesUpdate || updateProviderFiles {
