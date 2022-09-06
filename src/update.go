@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	up2date "xteve/src/internal/up2date/client"
@@ -58,7 +58,7 @@ func BinaryUpdate() (err error) {
 			return err
 		}
 
-		body, _ = ioutil.ReadAll(resp.Body)
+		body, _ = io.ReadAll(resp.Body)
 
 		err = json.Unmarshal(body, &git)
 		if err != nil {
