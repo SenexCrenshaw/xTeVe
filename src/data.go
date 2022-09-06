@@ -797,9 +797,9 @@ func buildDatabaseDVR() (err error) {
 
 	System.ScanInProgress = 1
 
-	Data.Streams.All = make([]interface{}, 0)
-	Data.Streams.Active = make([]interface{}, 0)
-	Data.Streams.Inactive = make([]interface{}, 0)
+	Data.Streams.All = make([]interface{}, 0, System.UnfilteredChannelLimit)
+	Data.Streams.Active = make([]interface{}, 0, System.UnfilteredChannelLimit)
+	Data.Streams.Inactive = make([]interface{}, 0, System.UnfilteredChannelLimit)
 	Data.Playlist.M3U.Groups.Text = []string{}
 	Data.Playlist.M3U.Groups.Value = []string{}
 	Data.StreamPreviewUI.Active = []string{}
@@ -966,7 +966,12 @@ func buildDatabaseDVR() (err error) {
 	sort.Strings(Data.Playlist.M3U.Groups.Value)
 
 	if len(Data.Streams.Active) == 0 && len(Settings.Filter) == 0 {
-		Data.Streams.Active = Data.Streams.All
+		if len(Data.Streams.All) <= System.UnfilteredChannelLimit {
+			Data.Streams.Active = Data.Streams.All
+		} else {
+			Data.Streams.Active = Data.Streams.All[0:System.UnfilteredChannelLimit]
+		}
+
 		Data.Streams.Inactive = make([]interface{}, 0)
 
 		Data.StreamPreviewUI.Active = Data.StreamPreviewUI.Inactive
@@ -976,6 +981,10 @@ func buildDatabaseDVR() (err error) {
 
 	if len(Data.Streams.Active) > System.PlexChannelLimit {
 		showWarning(2000)
+	}
+
+	if len(Settings.Filter) == 0 && len(Data.Streams.All) > System.UnfilteredChannelLimit {
+		showWarning(2001)
 	}
 
 	System.ScanInProgress = 0
