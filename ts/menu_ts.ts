@@ -1218,6 +1218,10 @@ function openPopUp(dataType, element) {
       m3uinput.setAttribute("onclick", 'javascript: uploadM3U();')
       content.appendRow("{{.playlist.fileM3U.title}}", m3uinput)
 
+      var dbKey: string = "syncWithPlaylist"
+      var input = content.createCheckbox(dbKey)
+      input.checked = data[dbKey]
+      content.appendRow("{{.filter.syncWithPlaylist.title}}", input)
 
       // Tuner
       if (SERVER["settings"]["buffer"] != "-") {

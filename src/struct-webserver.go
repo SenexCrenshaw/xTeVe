@@ -62,7 +62,8 @@ type RequestStruct struct {
 	LogLevel int    `json:"logLevelg,omitempty"`
 
 	// Upload Logo
-	Filename string `json:"filename,omitempty"`
+	Filename         string `json:"filename,omitempty"`
+	SyncWithPlaylist *bool  `json:"syncWithPlaylist,omitempty"`
 
 	// Filter
 	Filter map[int64]interface{} `json:"filter,omitempty"`

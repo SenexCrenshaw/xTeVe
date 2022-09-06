@@ -265,6 +265,7 @@ func saveFiles(request RequestStruct, fileType string) (err error) {
 		filesMap = Settings.Files.M3U
 		newData = request.Files.M3U
 		indicator = "M"
+		reloadData = true
 
 	case "hdhr":
 		filesMap = Settings.Files.HDHR
