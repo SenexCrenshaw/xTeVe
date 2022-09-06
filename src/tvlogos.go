@@ -3,7 +3,7 @@ package src
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +39,7 @@ func downloadLogoJSON() {
 	logoJsonExists := err == nil
 
 	if logoJsonExists && time.Now().Before(info.ModTime().Add(time.Hour*168)) {
-		content, err := ioutil.ReadFile(System.File.TVLogos)
+		content, err := os.ReadFile(System.File.TVLogos)
 		if err != nil {
 			ShowError(err, 0)
 		}
@@ -59,7 +59,7 @@ func downloadLogoJSON() {
 			return
 		}
 
-		b, err := ioutil.ReadAll(resp.Body)
+		b, err := io.ReadAll(resp.Body)
 		defer resp.Body.Close()
 		if err != nil {
 			return
@@ -100,7 +100,7 @@ func downloadLogoJSON() {
 		})
 
 		file, _ := json.MarshalIndent(Data.Logos, "", " ")
-		_ = ioutil.WriteFile(System.File.TVLogos, file, 0644)
+		_ = os.WriteFile(System.File.TVLogos, file, 0644)
 
 	}
 }

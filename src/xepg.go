@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"regexp"
 	"runtime"
@@ -701,7 +701,7 @@ func createXMLTVFile() (err error) {
 	Data.Cache.ImagesURLS = []string{}
 	Data.Cache.ImagesCache = []string{}
 
-	files, err := ioutil.ReadDir(System.Folder.ImagesCache)
+	files, err := os.ReadDir(System.Folder.ImagesCache)
 	if err == nil {
 
 		for _, file := range files {
