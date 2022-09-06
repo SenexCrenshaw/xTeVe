@@ -1706,7 +1706,7 @@ function openPopUp(dataType, element) {
         logoInput.setAttribute('list', 'station-logo-picker-datalist')
         logoInput.setAttribute('name', 'tvg-logo')
         logoInput.setAttribute('id', 'station-logo-picker-input')
-        logoInput.setAttribute('onchange', `javascript: this.className = 'changed'; this.value=SERVER['tvlogos']["url"]+this.value; previewChannelLogo(this.value)`)
+        logoInput.setAttribute('onchange', `javascript: this.className = 'changed'; this.value=this.value.startsWith("http") ? this.value : this.value=SERVER['tvlogos']["url"]+this.value; previewChannelLogo(this.value)`)
         logoDatalist.setAttribute('id', 'station-logo-picker-datalist')
         content.appendRow('{{.mapping.channelLogo.title}}', logoContainer);
         content.description("{{.mapping.channelLogo.description}}")
