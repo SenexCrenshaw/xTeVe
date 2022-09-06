@@ -365,7 +365,7 @@ func getErrMsg(errCode int) (errMsg string) {
 		errMsg = fmt.Sprintf("Plex can not handle more than %d streams. Use filter to reduce the number of streams. "+
 			"If you do not use Plex, ignore this warning.", System.PlexChannelLimit)
 	case 2001:
-		// Free slot
+		errMsg = fmt.Sprintf("%s has loaded more than %d streams. Use the filter to reduce the number of streams. Will only show the first %d in mappings with no filters", System.Name, System.UnfilteredChannelLimit, System.UnfilteredChannelLimit)
 		return
 	case 2002:
 		errMsg = "PMS can not play m3u8 streams"
