@@ -448,7 +448,15 @@ func createXEPGDatabase() (err error) {
 
 			// Update Channel Name, only possible with Channel ID's
 			if channelHasUUID {
-				if xepgChannel.XUpdateChannelName {
+				syncWithPlaylistDataConverted := false
+				syncWithPlaylist := false
+
+				m3u := Settings.Files.M3U[m3uChannel.FileM3UID]
+				if m3u != nil {
+					syncWithPlaylist, syncWithPlaylistDataConverted = m3u.(map[string]interface{})["syncWithPlaylist"].(bool)
+				}
+
+				if xepgChannel.XUpdateChannelName || (syncWithPlaylist && syncWithPlaylistDataConverted) {
 					xepgChannel.XName = m3uChannel.Name
 				}
 			}
@@ -477,6 +485,7 @@ func createXEPGDatabase() (err error) {
 					return getFreeChannelNumber(m3uChannel.StartingChannel)
 				}
 			}()
+
 			var newChannel XEPGChannelStruct
 			newChannel.FileM3UID = m3uChannel.FileM3UID
 			newChannel.FileM3UName = m3uChannel.FileM3UName
