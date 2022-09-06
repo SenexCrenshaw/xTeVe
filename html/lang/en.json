@@ -118,6 +118,11 @@
       "title": "Starting Channel Number",
       "placeholder": "",
       "description": ""
+    },
+    "syncWithPlaylist": {
+      "title": "Sync Names with Playlist",
+      "placeholder": "",
+      "description": ""
     }
   },
   "playlist": {
