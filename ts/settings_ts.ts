@@ -799,6 +799,11 @@ function showSettings() {
 }
 
 
+function saveSettingsByName(name: string, value: object) {
+  var server: Server = new Server("saveSettingsByName")
+  server.request({ settings: { [name]: value } })
+}
+
 function saveSettings() {
 
   var cmd = "saveSettings"

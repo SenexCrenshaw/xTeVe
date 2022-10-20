@@ -716,8 +716,9 @@ class ShowContent extends Content {
 
         var input = this.createInput("checkbox", menuKey, "")
         input.setAttribute("id", "shiftChannel")
-        input.setAttribute("checked", "")
+        input.checked = SERVER["settings"]['mappingsShiftChannels']
         input.setAttribute("title", "{{.checkbox.shiftChannel.title}}")
+        input.setAttribute("onchange", 'javascript: saveSettingsByName("mappingsShiftChannels",this.checked)')
         interaction.appendChild(input)
 
         var label = document.createElement("label")
@@ -745,6 +746,7 @@ class ShowContent extends Content {
         input.className = "search"
         input.setAttribute("onchange", 'javascript: searchInMapping()')
         interaction.appendChild(input)
+
         break;
 
       case "settings":
