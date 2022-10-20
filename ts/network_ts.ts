@@ -98,6 +98,8 @@ class Server {
           }
           return
 
+        case "saveSettingsByName":
+          return
         case "showInfo":
           return
         case "showDebug":

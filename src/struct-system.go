@@ -303,6 +303,7 @@ type SettingsStruct struct {
 	FFmpegOptions          string   `json:"ffmpeg.options"`
 	FFmpegPath             string   `json:"ffmpeg.path"`
 	VLCOptions             string   `json:"vlc.options"`
+	MappingsShiftChannels  bool     `json:"mappingsShiftChannels"`
 	VLCPath                string   `json:"vlc.path"`
 	FileM3U                []string `json:"file,omitempty"`  // In the Wizard, the M3U is saved in a Slice
 	FileXMLTV              []string `json:"xmltv,omitempty"` // Old Storage System of the provider XML File Slice (Required for the conversion to the new one)

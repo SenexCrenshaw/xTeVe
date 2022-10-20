@@ -46,6 +46,7 @@ type RequestStruct struct {
 		UsePort                  *bool     `json:"usePort"`
 		TempPath                 *string   `json:"temp.path,omitempty"`
 		TLSMode                  *bool     `json:"tlsMode,omitempty"`
+		MappingsShiftChannels    *bool     `json:"mappingsShiftChannels,omitempty"`
 		Tuner                    *int      `json:"tuner,omitempty"`
 		UDPxy                    *string   `json:"udpxy,omitempty"`
 		Update                   *[]string `json:"update,omitempty"`

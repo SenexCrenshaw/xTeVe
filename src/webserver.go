@@ -475,7 +475,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			// response.Response = Settings.Files
 
 		// Save Data
-		case "saveSettings":
+		case "saveSettings", "saveSettingsByName":
 			var authenticationUpdate = Settings.AuthenticationWEB
 			var previousTLSMode = Settings.TLSMode
 			var previousTvLogos = Settings.EnableTapiosinnTVLogos
@@ -1291,16 +1291,8 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 		}
 
-		if Settings.EnableTapiosinnTVLogos {
-
-			var tvLogos LogosStruct
-
-			if len(Data.Logos.LogoInformation) > 0 {
-				tvLogos = Data.Logos
-			}
-
-			defaults.Tvlogos = tvLogos
-
+		if Settings.EnableTapiosinnTVLogos && len(Data.Logos.LogoInformation) > 0 {
+			defaults.Tvlogos = Data.Logos
 		} else {
 			defaults.Tvlogos = LogosStruct{
 				URL:             "",
