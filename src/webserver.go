@@ -1291,21 +1291,13 @@ func setDefaultResponseData(response ResponseStruct, data bool) (defaults Respon
 
 		}
 
-		if Settings.EnableTapiosinnTVLogos {
+		defaults.Tvlogos = LogosStruct{
+			URL:             "",
+			LogoInformation: []LogoInformation{},
+		}
 
-			var tvLogos LogosStruct
-
-			if len(Data.Logos.LogoInformation) > 0 {
-				tvLogos = Data.Logos
-			}
-
-			defaults.Tvlogos = tvLogos
-
-		} else {
-			defaults.Tvlogos = LogosStruct{
-				URL:             "",
-				LogoInformation: []LogoInformation{},
-			}
+		if Settings.EnableTapiosinnTVLogos && len(Data.Logos.LogoInformation) > 0 {
+			defaults.Tvlogos = Data.Logos
 		}
 
 		defaults.Settings = Settings
