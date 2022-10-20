@@ -1675,7 +1675,7 @@ func getTuner(id, playlistType string) (tuner int) {
 func initBufferVFS(virtual bool) {
 
 	if virtual {
-		bufferVFS = memfs.New(memfs.WithMainDirs())
+		bufferVFS = memfs.New()
 	} else {
 		bufferVFS = osfs.New()
 	}
