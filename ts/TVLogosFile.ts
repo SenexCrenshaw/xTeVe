@@ -32,7 +32,7 @@ class TVLogosFile {
         datalist.appendChild(option);
 
 
-        if (SERVER['tvlogos']) {
+        if (SERVER['tvlogos'] && SERVER['tvlogos']["LogoInformation"]) {
             SERVER['tvlogos']["LogoInformation"].forEach((logo) => {
                 if (SERVER["settings"]["logosCountry"] === "All" ||
                     logo["path"].startsWith("misc") ||
