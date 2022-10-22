@@ -14,17 +14,11 @@ import (
 )
 
 type TVLogoInformation struct {
-	Sha  string `json:"sha"`
-	URL  string `json:"url"`
-	Tree []struct {
-		Path string `json:"path"`
-		Mode string `json:"mode"`
-		Type string `json:"type"`
-		Sha  string `json:"sha"`
-		URL  string `json:"url"`
-		Size int    `json:"size,omitempty"`
-	} `json:"tree"`
-	Truncated bool `json:"truncated"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Path string `json:"path"`
+	Mode string `json:"mode"`
 }
 
 type LogoInformation struct {
@@ -50,49 +44,61 @@ func downloadLogoJSON() {
 		}
 
 	} else {
-		Data.Logos.URL = "https://raw.githubusercontent.com/Tapiosinn/tv-logos/master/"
+		page := "1"
 
-		providerURL := "https://api.github.com/repos/Tapiosinn/tv-logos/git/trees/master?recursive=1"
+		Data.Logos.URL = "https://gitlab.com/tapiosinn/tv-logos/-/raw/main/"
 
-		resp, err := http.Get(providerURL)
-		if err != nil {
-			return
-		}
-
-		b, err := io.ReadAll(resp.Body)
-		defer resp.Body.Close()
-		if err != nil {
-			return
-		}
-
-		var tvLogoInformation *TVLogoInformation
-		err = json.Unmarshal(b, &tvLogoInformation)
-		if err != nil {
-			return
-		}
-
+		var tvLogoInformation *[]TVLogoInformation
 		rcountry := regexp.MustCompile(`^(countries|misc)\/(?P<country>[a-zA-Z0-9-]+)\/(.*\/)?(?P<filename>.*[png|jpg])$`)
-
 		var match [][]string
 
-		for _, v := range tvLogoInformation.Tree {
-			if !strings.HasSuffix(v.Path, "png") {
-				continue
-			}
-			//fmt.Printf("%s\n", v.Path)
+		fmt.Println("Building logo information")
+		for {
 
-			match = rcountry.FindAllStringSubmatch(v.Path, -1)
-			if match == nil {
-				fmt.Printf("BAD match %s\n", v.Path)
-				continue
+			providerURL := "https://gitlab.com/api/v4/projects/40347226/repository/tree?recursive=true&per_page=100&page=" + page
 
+			resp, err := http.Get(providerURL)
+			if err != nil {
+				break
 			}
 
-			if match != nil && match[0] != nil && len(match[0]) != 5 {
-				continue
+			b, err := io.ReadAll(resp.Body)
+			defer resp.Body.Close()
+			if err != nil {
+				break
 			}
 
-			Data.Logos.LogoInformation = append(Data.Logos.LogoInformation, LogoInformation{Country: match[0][2], Path: v.Path, FileName: match[0][4]})
+			err = json.Unmarshal(b, &tvLogoInformation)
+			if err != nil {
+				break
+			}
+
+			for _, v := range *tvLogoInformation {
+				if v.Type != "blob" || !strings.HasSuffix(v.Path, "png") {
+					continue
+				}
+
+				match = rcountry.FindAllStringSubmatch(v.Path, -1)
+				if match == nil {
+					fmt.Printf("BAD match %s\n", v.Path)
+					continue
+
+				}
+
+				if match != nil && match[0] != nil && len(match[0]) != 5 {
+					continue
+				}
+
+				Data.Logos.LogoInformation = append(Data.Logos.LogoInformation, LogoInformation{Country: match[0][2], Path: v.Path, FileName: match[0][4]})
+
+			}
+
+			if page = resp.Header.Get("X-Next-Page"); page == "" {
+				break
+			}
+
+			fmt.Println("Page", page, "/", resp.Header.Get("X-Total-Pages"))
+
 		}
 
 		sort.Slice(Data.Logos.LogoInformation, func(i, j int) bool {
