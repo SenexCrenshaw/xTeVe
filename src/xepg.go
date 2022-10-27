@@ -1,6 +1,7 @@
 package src
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
@@ -20,6 +21,7 @@ import (
 	"xteve/src/internal/imgcache"
 
 	"github.com/samber/lo"
+	"golang.org/x/net/html/charset"
 )
 
 // Check provider XMLTV File
@@ -28,7 +30,11 @@ func checkXMLCompatibility(id string, body []byte) (err error) {
 	var xmltv XMLTV
 	var compatibility = make(map[string]int)
 
-	err = xml.Unmarshal(body, &xmltv)
+	decoder := xml.NewDecoder(bytes.NewReader(body))
+	if strings.Contains(string(body), "encoding=\"ISO-8859-1\"") {
+		decoder.CharsetReader = charset.NewReaderLabel
+	}
+	err = decoder.Decode(&xmltv)
 	if err != nil {
 		return
 	}
@@ -1052,7 +1058,11 @@ func getLocalXMLTV(file string, xmltv *XMLTV) (err error) {
 		}
 
 		// Parse XML File
-		err = xml.Unmarshal(content, &xmltv)
+		decoder := xml.NewDecoder(bytes.NewReader(content))
+		if strings.Contains(string(content), "encoding=\"ISO-8859-1\"") {
+			decoder.CharsetReader = charset.NewReaderLabel
+		}
+		err = decoder.Decode(&xmltv)
 		if err != nil {
 			return err
 		}
